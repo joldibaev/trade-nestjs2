@@ -1,0 +1,922 @@
+[
+  {
+      "active": true,
+      "id": 87,
+      "name": "Дневник",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 2,
+      "name": "Блокнотлар",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 3,
+      "name": "Штрих",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 4,
+      "name": "Пластилин",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 5,
+      "name": "Краски",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 6,
+      "name": "Счет",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 7,
+      "name": "Кисточки",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 8,
+      "name": "Фаил Папки",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 9,
+      "name": "Журналы",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 10,
+      "name": "Фото бумаги и краски",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 11,
+      "name": "Цветн.Карандаш",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 12,
+      "name": "Ручка цветн",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 13,
+      "name": "Фламастеры",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 14,
+      "name": "Папка",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 15,
+      "name": "Планшеты",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 16,
+      "name": "Скетч буки",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 17,
+      "name": "Цветной лист",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 18,
+      "name": "Степлер и дыракол скобы",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 19,
+      "name": "Органайзер  Переплет Ламинатор",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 20,
+      "name": "Калькулятор",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 21,
+      "name": "Термосы",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 22,
+      "name": "Бутылка",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 23,
+      "name": "Игравой",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 24,
+      "name": "Скотч",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 25,
+      "name": "Тетрады",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 26,
+      "name": "Биндер.скрепки.кнопки",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 27,
+      "name": "Стерки",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 28,
+      "name": "Доска",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 29,
+      "name": "Раскраска",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 30,
+      "name": "Прописи",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 31,
+      "name": "Книги/Англиский",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 32,
+      "name": "Рисование",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 33,
+      "name": "Книги/Сказка",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 34,
+      "name": "Книги/Узбек",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 35,
+      "name": "Книги/худ лит и псих",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 36,
+      "name": "Книги/Энциклопедия",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 37,
+      "name": "Книги/на англ яз",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 38,
+      "name": "Ручки",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 39,
+      "name": "Книги/Детская",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 40,
+      "name": "Ручки Гель",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 41,
+      "name": "Фото альбомы",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 42,
+      "name": "Шопер,КошелокСумка",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 43,
+      "name": "РАЗНЫЙ",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 44,
+      "name": "шкатулка",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 45,
+      "name": "Точилка",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 46,
+      "name": "Стикеры",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 47,
+      "name": "Пенал",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 48,
+      "name": "Циркуль",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 49,
+      "name": "Книги/карточка",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 50,
+      "name": "Линейка",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 51,
+      "name": "Прост.Карандаш",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 52,
+      "name": "Бланки",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 53,
+      "name": "Чек лента",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 54,
+      "name": "Ножница",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 55,
+      "name": "Обложка",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 56,
+      "name": "Предметный тетрадь",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 57,
+      "name": "Школьные Портфели",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 58,
+      "name": "Подарочная сумка,офармление",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 59,
+      "name": "Накладной,документ",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 60,
+      "name": "Дневник росс.",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 61,
+      "name": "Обложки документов",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 62,
+      "name": "Органайзер",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 63,
+      "name": "Брилог",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 64,
+      "name": "ШАРЫ",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 65,
+      "name": "ИГРУШКА COSMOS-2",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 66,
+      "name": "ШТУЧНЫЕ ТОВАРЫ",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 67,
+      "name": "Рамка",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 68,
+      "name": "Глобусы и Карта",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 69,
+      "name": "Плакатлар",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 70,
+      "name": "Увлажнитель Ароматизатор",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 71,
+      "name": "Диод",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 72,
+      "name": "Игрушка",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 73,
+      "name": "Колонка",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 74,
+      "name": "Новый год",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 75,
+      "name": "Настольные игры",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 76,
+      "name": "Сувениры",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 77,
+      "name": "Зеркало",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 78,
+      "name": "Светильник",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 79,
+      "name": "Пузырь",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 80,
+      "name": "Чашка",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 81,
+      "name": "Вентилятор",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 82,
+      "name": "Торт свеча",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 83,
+      "name": "Игрушка /Мягкая игрушка",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 84,
+      "name": "Гул",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 85,
+      "name": "Игрушка /Слайм",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 86,
+      "name": "ЛАНЧБОКС",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 1,
+      "name": "Клей",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 88,
+      "name": "Сагат",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 89,
+      "name": "СУВИНИР-2",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 90,
+      "name": "ИГРУШКА COSMOS-2/МЯГКАЯ ИГРУШКА 2",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 91,
+      "name": "Часы",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 92,
+      "name": "Будильник",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 93,
+      "name": "свеча",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 94,
+      "name": "новый год 25",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 95,
+      "name": "наклейка",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 96,
+      "name": "новый год 25/елкага игрушка",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 97,
+      "name": "новый год 25/ЕЛКА-2025",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 98,
+      "name": "Телефон",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 99,
+      "name": "Машина",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 100,
+      "name": "Мозайка",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 101,
+      "name": "рамазан",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 102,
+      "name": "варрак(воздушная змея)",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 103,
+      "name": "Резина для денег",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 104,
+      "name": "для развития",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 105,
+      "name": "бассейн",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 106,
+      "name": "Слайм",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 107,
+      "name": "школьные портфели-2025",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 108,
+      "name": "Арома свечи",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 109,
+      "name": "младенец",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 110,
+      "name": "Картины",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 111,
+      "name": "Ваза",
+      "updated_at": null,
+      "created_at": null,
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 115,
+      "name": "часы",
+      "updated_at": "2025-09-14 19:45:50+05",
+      "created_at": "2025-09-14 19:45:50+05",
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 114,
+      "name": "зонтик",
+      "updated_at": "2025-09-14 14:32:48+05",
+      "created_at": "2025-09-14 14:32:48+05",
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 113,
+      "name": "тату",
+      "updated_at": "2025-08-13 18:19:42+05",
+      "created_at": "2025-08-13 18:19:42+05",
+      "created_user.name": "Администратор"
+  },
+  {
+      "active": true,
+      "id": 112,
+      "name": "Сувенир Brand",
+      "updated_at": "2025-07-29 18:42:09+05",
+      "created_at": "2025-07-29 18:42:09+05",
+      "created_user.name": "Администратор"
+  }
+]

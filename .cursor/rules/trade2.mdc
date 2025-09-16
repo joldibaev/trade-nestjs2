@@ -1,0 +1,25 @@
+---
+description:
+globs:
+  alwaysApply: true
+  context: true
+priority: high
+scope: project
+---
+
+## Язык
+- Язык проекта — Русский. Ошибки, сообщения и.т.д. должны быть на этом языке
+
+## Правила проекта
+- Если ID uuid то это v7
+- Документы будут иметь ID int
+- При создании фильтра можешь использовать const whereCondition: FindOptionsWhere<T> = {};
+- Основная валюта UZS (минимум 1, ниже быть не может. Например: 0.1 - не верно)
+- Должна быть валидация ValidationPipe, ParseIntPipe, ParseBoolPipe, ParseArrayPipe, ParseUUIDPipe и другие
+
+## DTO
+- dto на фронте и на бэке должны быть одинаковые. приоритет на бэк
+
+## Линтинг и форматирование
+- Всегда запускайте **Prettier** после как закончишь свой todo-list
+- Строго соблюдайте правила **ESLint**.
