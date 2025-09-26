@@ -1,0 +1,38 @@
+# Установить поведение по умолчанию для всех файлов
+* text=auto eol=lf
+
+# Явно объявить текстовые файлы, которые вы хотите всегда нормализовать
+# и преобразовать в нативные окончания строк в рабочем каталоге
+*.ts text eol=lf
+*.js text eol=lf
+*.json text eol=lf
+*.html text eol=lf
+*.css text eol=lf
+*.scss text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.xml text eol=lf
+*.txt text eol=lf
+*.sql text eol=lf
+*.env text eol=lf
+*.example text eol=lf
+
+# Объявить файлы, которые будут всегда иметь CRLF окончания строк в рабочем каталоге
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Объявить файлы, которые будут всегда иметь LF окончания строк в рабочем каталоге
+*.sh text eol=lf
+
+# Объявить файлы, которые являются бинарными и не должны быть изменены
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.svg binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
