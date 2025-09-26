@@ -80,18 +80,12 @@ export class CategoriesService {
   }
 
   async deleteMany(ids: string[]): Promise<SuccessResponse> {
-    const entities = await this.categoryRepository.findBy({ id: In(ids) });
-    if (entities.length) {
-      await this.categoryRepository.softRemove(entities);
-    }
+    await this.categoryRepository.softDelete({ id: In(ids) });
     return { success: true };
   }
 
   async recoveryMany(ids: string[]): Promise<SuccessResponse> {
-    const entities = await this.categoryRepository.findBy({ id: In(ids) });
-    if (entities.length) {
-      await this.categoryRepository.recover(entities);
-    }
+    await this.categoryRepository.restore({ id: In(ids) });
     return { success: true };
   }
 

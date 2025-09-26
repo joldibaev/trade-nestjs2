@@ -53,18 +53,12 @@ export class CashboxesService {
   }
 
   async deleteMany(ids: string[]): Promise<SuccessResponse> {
-    const entities = await this.cashboxRepository.findBy({ id: In(ids) });
-    if (entities.length) {
-      await this.cashboxRepository.softRemove(entities);
-    }
+    await this.cashboxRepository.softDelete({ id: In(ids) });
     return { success: true };
   }
 
   async recoveryMany(ids: string[]): Promise<SuccessResponse> {
-    const entities = await this.cashboxRepository.findBy({ id: In(ids) });
-    if (entities.length) {
-      await this.cashboxRepository.recover(entities);
-    }
+    await this.cashboxRepository.restore({ id: In(ids) });
     return { success: true };
   }
 

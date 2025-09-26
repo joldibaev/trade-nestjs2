@@ -7,7 +7,6 @@ import { ProductsModule } from '../products/products.module';
 import { StoresModule } from '../stores/stores.module';
 import { DocumentPurchasesModule } from '../document-purchases/document-purchases.module';
 import { ProductQuantitiesModule } from '../product-quantities/product-quantities.module';
-import { OperationSubscriber } from './subscribers/operation.subscriber';
 
 @Module({
   imports: [
@@ -18,7 +17,7 @@ import { OperationSubscriber } from './subscribers/operation.subscriber';
     DocumentPurchasesModule,
   ],
   controllers: [OperationsController],
-  providers: [OperationsService, OperationSubscriber],
+  providers: [OperationsService],
   exports: [OperationsService],
 })
 export class OperationsModule {}

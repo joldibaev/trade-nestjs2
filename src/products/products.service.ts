@@ -90,18 +90,12 @@ export class ProductsService {
   }
 
   async deleteMany(ids: string[]): Promise<SuccessResponse> {
-    const entities = await this.productRepository.findBy({ id: In(ids) });
-    if (entities.length) {
-      await this.productRepository.softRemove(entities);
-    }
+    await this.productRepository.softDelete({ id: In(ids) });
     return { success: true };
   }
 
   async recoveryMany(ids: string[]): Promise<SuccessResponse> {
-    const entities = await this.productRepository.findBy({ id: In(ids) });
-    if (entities.length) {
-      await this.productRepository.recover(entities);
-    }
+    await this.productRepository.restore({ id: In(ids) });
     return { success: true };
   }
 

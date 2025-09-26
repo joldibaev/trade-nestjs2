@@ -38,18 +38,12 @@ export class VendorsService {
   }
 
   async deleteMany(ids: string[]): Promise<SuccessResponse> {
-    const entities = await this.vendorRepository.findBy({ id: In(ids) });
-    if (entities.length) {
-      await this.vendorRepository.softRemove(entities);
-    }
+    await this.vendorRepository.softDelete({ id: In(ids) });
     return { success: true };
   }
 
   async recoveryMany(ids: string[]): Promise<SuccessResponse> {
-    const entities = await this.vendorRepository.findBy({ id: In(ids) });
-    if (entities.length) {
-      await this.vendorRepository.recover(entities);
-    }
+    await this.vendorRepository.restore({ id: In(ids) });
     return { success: true };
   }
 }

@@ -48,6 +48,15 @@ export class CreateOperationDto {
   productId: string;
 
   @ApiProperty({
+    description: 'Store ID for this operation (auto-set from document)',
+    example: '018f-1234-5678-9abc-def012345678',
+    required: false,
+  })
+  @IsOptional()
+  @IsUUID('7', { message: 'storeId должен быть валидным UUID v7' })
+  storeId?: string;
+
+  @ApiProperty({
     description: 'Document Purchase ID for this operation',
     example: 1,
     required: false,

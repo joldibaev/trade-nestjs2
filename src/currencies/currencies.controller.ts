@@ -11,6 +11,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CurrenciesService } from './currencies.service';
+import { CreateCurrencyDto } from './dto/create-currency.dto';
 import { UpdateCurrencyDto } from './dto/update-currency.dto';
 import { SuccessResponseDto } from '../shared/interfaces/success-response.interface';
 import {
@@ -31,6 +32,12 @@ export class CurrenciesController {
 
   @Post()
   @ApiOperation({ summary: 'Создать новую валюту' })
+  create(@Body() createCurrencyDto: CreateCurrencyDto) {
+    return this.currenciesService.create(createCurrencyDto);
+  }
+
+  @Get()
+  @ApiOperation({ summary: 'Получить все валюты' })
   findAll() {
     return this.currenciesService.findAll();
   }
@@ -69,5 +76,14 @@ export class CurrenciesController {
     @Body() deleteCurrenciesDto: DeleteCurrenciesDto,
   ): Promise<SuccessResponseDto> {
     return this.currenciesService.deleteMany(deleteCurrenciesDto.ids);
+  }
+
+  @Post('restore')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Восстановить несколько валют по ID' })
+  recoveryMany(
+    @Body() deleteCurrenciesDto: DeleteCurrenciesDto,
+  ): Promise<SuccessResponseDto> {
+    return this.currenciesService.recoveryMany(deleteCurrenciesDto.ids);
   }
 }

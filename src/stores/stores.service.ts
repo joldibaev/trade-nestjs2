@@ -38,18 +38,12 @@ export class StoresService {
   }
 
   async deleteMany(ids: string[]): Promise<SuccessResponse> {
-    const entities = await this.storeRepository.findBy({ id: In(ids) });
-    if (entities.length) {
-      await this.storeRepository.softRemove(entities);
-    }
+    await this.storeRepository.softDelete({ id: In(ids) });
     return { success: true };
   }
 
   async recoveryMany(ids: string[]): Promise<SuccessResponse> {
-    const entities = await this.storeRepository.findBy({ id: In(ids) });
-    if (entities.length) {
-      await this.storeRepository.recover(entities);
-    }
+    await this.storeRepository.restore({ id: In(ids) });
     return { success: true };
   }
 }

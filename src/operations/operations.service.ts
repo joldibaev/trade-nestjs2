@@ -89,18 +89,13 @@ export class OperationsService {
     return operation;
   }
 
-  // need to use save. have subscriber
   async update(
     id: string,
     updateOperationDto: UpdateOperationDto,
   ): Promise<Operation> {
-    const operation = await this.findOne(id);
-
     // Валидация товара если указан
     if (updateOperationDto.productId) {
-      operation.product = await this.productsService.findOne(
-        updateOperationDto.productId,
-      );
+      await this.productsService.findOne(updateOperationDto.productId);
     }
 
     // Валидация документов если указаны
@@ -111,64 +106,27 @@ export class OperationsService {
     ) {
       await this.validateDocumentReferences(updateOperationDto);
 
-      // Обновляем storeId из нового документа
-      const newStoreId = await this.getStoreIdFromDocument(updateOperationDto);
-      operation.storeId = newStoreId;
+      updateOperationDto.storeId =
+        await this.getStoreIdFromDocument(updateOperationDto);
     }
 
-    // Update other fields directly on the entity
-    if (updateOperationDto.quantity !== undefined) {
-      operation.quantity = updateOperationDto.quantity;
-    }
-
-    if (updateOperationDto.price !== undefined) {
-      operation.price = updateOperationDto.price;
-    }
-
-    if (updateOperationDto.quantityPositive !== undefined) {
-      operation.quantityPositive = updateOperationDto.quantityPositive;
-    }
-
-    if (updateOperationDto.documentPurchaseId !== undefined) {
-      operation.documentPurchaseId = updateOperationDto.documentPurchaseId;
-    }
-
-    if (updateOperationDto.documentSellId !== undefined) {
-      operation.documentSellId = updateOperationDto.documentSellId;
-    }
-
-    if (updateOperationDto.documentAdjustmentId !== undefined) {
-      operation.documentAdjustmentId = updateOperationDto.documentAdjustmentId;
-    }
-
-    return await this.operationRepository.save(operation);
+    await this.operationRepository.update(id, updateOperationDto);
+    return await this.findOne(id);
   }
 
   async deleteMany(
     deleteOperationsDto: DeleteOperationsDto,
   ): Promise<SuccessResponse> {
-    const entities = await this.operationRepository.findBy({
+    await this.operationRepository.softDelete({
       id: In(deleteOperationsDto.ids),
     });
-
-    if (entities.length) {
-      await this.operationRepository.softRemove(entities);
-    }
-
     return { success: true };
   }
 
   async recoveryMany(
     deleteOperationsDto: DeleteOperationsDto,
   ): Promise<SuccessResponse> {
-    const entities = await this.operationRepository.findBy({
-      id: In(deleteOperationsDto.ids),
-    });
-
-    if (entities.length) {
-      await this.operationRepository.recover(entities);
-    }
-
+    await this.operationRepository.restore({ id: In(deleteOperationsDto.ids) });
     return { success: true };
   }
 

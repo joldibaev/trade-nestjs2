@@ -43,10 +43,12 @@ export class CurrenciesService {
   }
 
   async deleteMany(ids: string[]): Promise<SuccessResponse> {
-    const entities = await this.currencyRepository.findBy({ id: In(ids) });
-    if (entities.length) {
-      await this.currencyRepository.softRemove(entities);
-    }
+    await this.currencyRepository.softDelete({ id: In(ids) });
+    return { success: true };
+  }
+
+  async recoveryMany(ids: string[]): Promise<SuccessResponse> {
+    await this.currencyRepository.restore({ id: In(ids) });
     return { success: true };
   }
 }

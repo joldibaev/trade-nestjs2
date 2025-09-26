@@ -4,7 +4,6 @@ import { In, Repository } from 'typeorm';
 import { DocumentPurchase } from './entities/document-purchase.entity';
 import { CreateDocumentPurchaseDto } from './dto/create-document-purchase.dto';
 import { UpdateDocumentPurchaseDto } from './dto/update-document-purchase.dto';
-import { User } from '../users/entities/user.entity';
 import { SuccessResponse } from '../shared/interfaces/success-response.interface';
 import { StoresService } from '../stores/stores.service';
 import { VendorsService } from '../vendors/vendors.service';
@@ -51,71 +50,40 @@ export class DocumentPurchasesService {
     return documentPurchase;
   }
 
-  // need to use save. have subscriber
   async update(
     id: number,
     updateDocumentPurchaseDto: UpdateDocumentPurchaseDto & {
       authorId: string;
     },
-  ) {
-    const documentPurchase = await this.findOne(id);
-
-    // todo validate user
-    documentPurchase.author = {
-      id: updateDocumentPurchaseDto.authorId,
-    } as User;
-
+  ): Promise<DocumentPurchase> {
+    // Валидация склада если указан
     if (updateDocumentPurchaseDto.storeId) {
-      documentPurchase.store = await this.storesService.findOne(
-        updateDocumentPurchaseDto.storeId,
-      );
+      await this.storesService.findOne(updateDocumentPurchaseDto.storeId);
     }
 
+    // Валидация поставщика если указан
     if (updateDocumentPurchaseDto.vendorId) {
-      documentPurchase.vendor = await this.vendorsService.findOne(
-        updateDocumentPurchaseDto.vendorId,
-      );
+      await this.vendorsService.findOne(updateDocumentPurchaseDto.vendorId);
     }
 
+    // Валидация типа цены если указан
     if (updateDocumentPurchaseDto.priceTypeId) {
-      documentPurchase.priceType = await this.priceTypesService.findOne(
+      await this.priceTypesService.findOne(
         updateDocumentPurchaseDto.priceTypeId,
       );
     }
 
-    // Update other fields directly on the entity
-    if (updateDocumentPurchaseDto.performed !== undefined) {
-      documentPurchase.performed = updateDocumentPurchaseDto.performed;
-    }
-
-    if (updateDocumentPurchaseDto.note !== undefined) {
-      documentPurchase.note = updateDocumentPurchaseDto.note;
-    }
-
-    if (updateDocumentPurchaseDto.date) {
-      documentPurchase.date = new Date(updateDocumentPurchaseDto.date);
-    }
-
-    return await this.documentPurchaseRepository.save(documentPurchase);
+    await this.documentPurchaseRepository.update(id, updateDocumentPurchaseDto);
+    return await this.findOne(id);
   }
 
   async deleteMany(ids: number[]): Promise<SuccessResponse> {
-    const entities = await this.documentPurchaseRepository.findBy({
-      id: In(ids),
-    });
-    if (entities.length) {
-      await this.documentPurchaseRepository.softRemove(entities);
-    }
+    await this.documentPurchaseRepository.softDelete({ id: In(ids) });
     return { success: true };
   }
 
   async recoveryMany(ids: number[]): Promise<SuccessResponse> {
-    const entities = await this.documentPurchaseRepository.findBy({
-      id: In(ids),
-    });
-    if (entities.length) {
-      await this.documentPurchaseRepository.recover(entities);
-    }
+    await this.documentPurchaseRepository.restore({ id: In(ids) });
     return { success: true };
   }
 }

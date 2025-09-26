@@ -55,18 +55,12 @@ export class PriceTypesService {
   }
 
   async deleteMany(ids: string[]): Promise<SuccessResponse> {
-    const entities = await this.priceTypeRepository.findBy({ id: In(ids) });
-    if (entities.length) {
-      await this.priceTypeRepository.softRemove(entities);
-    }
+    await this.priceTypeRepository.softDelete({ id: In(ids) });
     return { success: true };
   }
 
   async recoveryMany(ids: string[]): Promise<SuccessResponse> {
-    const entities = await this.priceTypeRepository.findBy({ id: In(ids) });
-    if (entities.length) {
-      await this.priceTypeRepository.recover(entities);
-    }
+    await this.priceTypeRepository.restore({ id: In(ids) });
     return { success: true };
   }
 }

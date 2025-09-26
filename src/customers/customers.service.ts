@@ -41,18 +41,12 @@ export class CustomersService {
   }
 
   async deleteMany(ids: string[]): Promise<SuccessResponse> {
-    const entities = await this.customerRepository.findBy({ id: In(ids) });
-    if (entities.length) {
-      await this.customerRepository.softRemove(entities);
-    }
+    await this.customerRepository.softDelete({ id: In(ids) });
     return { success: true };
   }
 
   async recoveryMany(ids: string[]): Promise<SuccessResponse> {
-    const entities = await this.customerRepository.findBy({ id: In(ids) });
-    if (entities.length) {
-      await this.customerRepository.recover(entities);
-    }
+    await this.customerRepository.restore({ id: In(ids) });
     return { success: true };
   }
 }
