@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Operation } from '../operations/entities/operation.entity';
 import { ProductQuantity } from './entities/product-quantity.entity';
-import { Repository, In } from 'typeorm';
+import { Repository, In, EntityManager } from 'typeorm';
 
 interface AggregatedQuantity {
   productId: string;
@@ -19,13 +19,23 @@ export class ProductQuantitiesService {
     private readonly productQuantityRepository: Repository<ProductQuantity>,
   ) {}
 
-  async recalculate(productIds: string[]): Promise<void> {
+  async recalculate(
+    productIds: string[],
+    manager?: EntityManager,
+  ): Promise<void> {
     if (!productIds || productIds.length === 0) {
       return;
     }
 
+    const operationRepo = manager
+      ? manager.getRepository(Operation)
+      : this.operationRepository;
+    const productQuantityRepo = manager
+      ? manager.getRepository(ProductQuantity)
+      : this.productQuantityRepository;
+
     // Получаем агрегированные данные по операциям для указанных товаров
-    const aggregatedQuantities = await this.operationRepository
+    const aggregatedQuantities = await operationRepo
       .createQueryBuilder('operations')
       .select('"operations"."storeId"', 'storeId')
       .addSelect('"operations"."productId"', 'productId')
@@ -55,7 +65,7 @@ export class ProductQuantitiesService {
       .getRawMany<AggregatedQuantity>();
 
     // Получаем все существующие записи остатков для указанных товаров
-    const existingQuantities = await this.productQuantityRepository.find({
+    const existingQuantities = await productQuantityRepo.find({
       where: { productId: In(productIds) },
     });
 
@@ -83,7 +93,7 @@ export class ProductQuantitiesService {
         existingQuantitiesMap.delete(key); // Удаляем из Map, чтобы потом обработать оставшиеся
       } else {
         // Создаем новую запись
-        const newQuantity = this.productQuantityRepository.create({
+        const newQuantity = productQuantityRepo.create({
           productId: aggregated.productId,
           storeId: aggregated.storeId,
           quantity: totalQuantity,
@@ -100,11 +110,11 @@ export class ProductQuantitiesService {
 
     // Сохраняем изменения
     if (quantitiesToUpdate.length > 0) {
-      await this.productQuantityRepository.save(quantitiesToUpdate);
+      await productQuantityRepo.save(quantitiesToUpdate);
     }
 
     if (quantitiesToCreate.length > 0) {
-      await this.productQuantityRepository.save(quantitiesToCreate);
+      await productQuantityRepo.save(quantitiesToCreate);
     }
   }
 }

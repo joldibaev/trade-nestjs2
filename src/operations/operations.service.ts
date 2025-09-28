@@ -5,7 +5,13 @@ import {
   NotImplementedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsWhere, In, Repository } from 'typeorm';
+import {
+  DataSource,
+  EntityManager,
+  FindOptionsWhere,
+  In,
+  Repository,
+} from 'typeorm';
 import { Operation } from './entities/operation.entity';
 import { CreateOperationDto } from './dto/create-operation.dto';
 import { UpdateOperationDto } from './dto/update-operation.dto';
@@ -14,6 +20,7 @@ import { DeleteOperationsDto } from './dto/delete-operations.dto';
 import { SuccessResponse } from '../shared/interfaces/success-response.interface';
 import { ProductsService } from '../products/products.service';
 import { DocumentPurchasesService } from '../document-purchases/document-purchases.service';
+import { ProductQuantitiesService } from '../product-quantities/product-quantities.service';
 
 @Injectable()
 export class OperationsService {
@@ -22,26 +29,49 @@ export class OperationsService {
     private readonly operationRepository: Repository<Operation>,
     private readonly productsService: ProductsService,
     private readonly documentPurchasesService: DocumentPurchasesService,
+    private readonly productQuantitiesService: ProductQuantitiesService,
+    private readonly dataSource: DataSource,
   ) {}
 
-  async create(createOperationDto: CreateOperationDto): Promise<Operation> {
-    // Валидация товара
-    await this.productsService.findOne(createOperationDto.productId);
+  async create(
+    createOperationDto: CreateOperationDto,
+    manager?: EntityManager,
+  ): Promise<Operation> {
+    const executeOperation = async (entityManager: EntityManager) => {
+      // Валидация товара
+      await this.productsService.findOne(createOperationDto.productId);
 
-    // Валидация документов (только один должен быть указан)
-    await this.validateDocumentReferences(createOperationDto);
+      // Валидация документов (только один должен быть указан)
+      await this.validateDocumentReferences(createOperationDto);
 
-    // Получаем storeId из связанного документа
-    const storeId = await this.getStoreIdFromDocument(createOperationDto);
+      // Получаем storeId из связанного документа
+      const storeId = await this.getStoreIdFromDocument(createOperationDto);
 
-    const operation = this.operationRepository.create({
-      ...createOperationDto,
-      storeId,
-    });
-    return await this.operationRepository.save(operation);
+      const operation = entityManager.create(Operation, {
+        ...createOperationDto,
+        storeId,
+      });
+      const savedOperation = await entityManager.save(Operation, operation);
+
+      await this.productQuantitiesService.recalculate(
+        [savedOperation.productId],
+        entityManager,
+      );
+
+      return savedOperation;
+    };
+
+    if (manager) {
+      return await executeOperation(manager);
+    } else {
+      return await this.dataSource.transaction(executeOperation);
+    }
   }
 
-  async findAll(getOperationsDto?: GetOperationsDto): Promise<Operation[]> {
+  async findAll(
+    getOperationsDto?: GetOperationsDto,
+    manager?: EntityManager,
+  ): Promise<Operation[]> {
     const whereCondition: FindOptionsWhere<Operation> = {};
 
     if (getOperationsDto?.documentPurchaseId) {
@@ -57,7 +87,11 @@ export class OperationsService {
         getOperationsDto.documentAdjustmentId;
     }
 
-    return await this.operationRepository.find({
+    const repository = manager
+      ? manager.getRepository(Operation)
+      : this.operationRepository;
+
+    return await repository.find({
       where: whereCondition,
       relations: [
         'product',
@@ -70,8 +104,12 @@ export class OperationsService {
     });
   }
 
-  async findOne(id: string): Promise<Operation> {
-    const operation = await this.operationRepository.findOne({
+  async findOne(id: string, manager?: EntityManager): Promise<Operation> {
+    const repository = manager
+      ? manager.getRepository(Operation)
+      : this.operationRepository;
+
+    const operation = await repository.findOne({
       where: { id },
       relations: [
         'product',
@@ -92,42 +130,117 @@ export class OperationsService {
   async update(
     id: string,
     updateOperationDto: UpdateOperationDto,
+    manager?: EntityManager,
   ): Promise<Operation> {
-    // Валидация товара если указан
-    if (updateOperationDto.productId) {
-      await this.productsService.findOne(updateOperationDto.productId);
+    const executeOperation = async (entityManager: EntityManager) => {
+      // Валидация товара если указан
+      if (updateOperationDto.productId) {
+        await this.productsService.findOne(updateOperationDto.productId);
+      }
+
+      // Валидация документов если указаны
+      if (
+        updateOperationDto.documentPurchaseId ||
+        updateOperationDto.documentSellId ||
+        updateOperationDto.documentAdjustmentId
+      ) {
+        await this.validateDocumentReferences(updateOperationDto);
+
+        updateOperationDto.storeId =
+          await this.getStoreIdFromDocument(updateOperationDto);
+      }
+
+      await entityManager.update(Operation, id, updateOperationDto);
+      const operation = await this.findOne(id, entityManager);
+
+      if (!operation) {
+        throw new NotFoundException(`Операция с ID ${id} не найдена`);
+      }
+
+      await this.productQuantitiesService.recalculate(
+        [operation.productId],
+        entityManager,
+      );
+
+      return operation;
+    };
+
+    if (manager) {
+      return await executeOperation(manager);
+    } else {
+      return await this.dataSource.transaction(executeOperation);
     }
-
-    // Валидация документов если указаны
-    if (
-      updateOperationDto.documentPurchaseId ||
-      updateOperationDto.documentSellId ||
-      updateOperationDto.documentAdjustmentId
-    ) {
-      await this.validateDocumentReferences(updateOperationDto);
-
-      updateOperationDto.storeId =
-        await this.getStoreIdFromDocument(updateOperationDto);
-    }
-
-    await this.operationRepository.update(id, updateOperationDto);
-    return await this.findOne(id);
   }
 
   async deleteMany(
     deleteOperationsDto: DeleteOperationsDto,
+    manager?: EntityManager,
   ): Promise<SuccessResponse> {
-    await this.operationRepository.softDelete({
-      id: In(deleteOperationsDto.ids),
-    });
-    return { success: true };
+    const executeOperation = async (entityManager: EntityManager) => {
+      // Получаем операции перед удалением для определения productId
+      const operations = await entityManager.find(Operation, {
+        where: { id: In(deleteOperationsDto.ids) },
+        select: ['productId'],
+      });
+
+      // Выполняем мягкое удаление
+      await entityManager.softDelete(Operation, {
+        id: In(deleteOperationsDto.ids),
+      });
+
+      // Пересчитываем количества для всех затронутых товаров
+      const productIds = [...new Set(operations.map(op => op.productId))];
+      if (productIds.length > 0) {
+        await this.productQuantitiesService.recalculate(
+          productIds,
+          entityManager,
+        );
+      }
+
+      return { success: true };
+    };
+
+    if (manager) {
+      return await executeOperation(manager);
+    } else {
+      return await this.dataSource.transaction(executeOperation);
+    }
   }
 
   async recoveryMany(
     deleteOperationsDto: DeleteOperationsDto,
+    manager?: EntityManager,
   ): Promise<SuccessResponse> {
-    await this.operationRepository.restore({ id: In(deleteOperationsDto.ids) });
-    return { success: true };
+    const executeOperation = async (entityManager: EntityManager) => {
+      // Получаем операции перед восстановлением для определения productId
+      const operations = await entityManager.find(Operation, {
+        where: { id: In(deleteOperationsDto.ids) },
+        select: ['productId'],
+        withDeleted: true, // Включаем удаленные записи
+      });
+
+      // Выполняем восстановление
+      await entityManager.restore(Operation, {
+        id: In(deleteOperationsDto.ids),
+      });
+
+      // Пересчитываем количества для всех затронутых товаров
+      const productIds = [...new Set(operations.map(op => op.productId))];
+      if (productIds.length > 0) {
+        await this.productQuantitiesService.recalculate(
+          productIds,
+          entityManager,
+        );
+      }
+
+      return { success: true };
+    };
+
+    if (manager) {
+      return await executeOperation(manager);
+    } else {
+      return await this.dataSource.transaction(executeOperation);
+    }
   }
 
   /**
