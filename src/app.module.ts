@@ -19,6 +19,7 @@ import { BarcodesModule } from './barcodes/barcodes.module';
 import { CurrenciesModule } from './currencies/currencies.module';
 import { XlsxReaderModule } from './xlsx-reader/xlsx-reader.module';
 import { ProductQuantitiesModule } from './product-quantities/product-quantities.module';
+import { OperationPropsModule } from './operation-props/operation-props.module';
 import { databaseConfig } from './config/database.config';
 
 @Module({
@@ -48,6 +49,7 @@ import { databaseConfig } from './config/database.config';
     BarcodesModule,
     CurrenciesModule,
     XlsxReaderModule,
+    OperationPropsModule,
   ],
 })
 export class AppModule {}

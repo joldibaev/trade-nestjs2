@@ -4,5 +4,5 @@ import { databaseConfig } from './src/config/database.config';
 export default new DataSource({
   ...databaseConfig,
   entities: ['src/**/*.entity.ts'],
-  migrations: ['migrations/*.ts'],
+  migrations: ['src/migrations/*.ts'],
 });

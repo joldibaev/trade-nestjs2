@@ -7,6 +7,7 @@ import { ProductsModule } from '../products/products.module';
 import { StoresModule } from '../stores/stores.module';
 import { DocumentPurchasesModule } from '../document-purchases/document-purchases.module';
 import { ProductQuantitiesModule } from '../product-quantities/product-quantities.module';
+import { OperationPropsModule } from '../operation-props/operation-props.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { ProductQuantitiesModule } from '../product-quantities/product-quantitie
     ProductsModule,
     StoresModule,
     DocumentPurchasesModule,
+    OperationPropsModule,
   ],
   controllers: [OperationsController],
   providers: [OperationsService],

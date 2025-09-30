@@ -42,6 +42,12 @@ export class CurrenciesController {
     return this.currenciesService.findAll();
   }
 
+  @Get('latest')
+  @ApiOperation({ summary: 'Получить последний курс валюты' })
+  getLatest() {
+    return this.currenciesService.getLatest();
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Получить валюту по ID' })
   @ApiParam({

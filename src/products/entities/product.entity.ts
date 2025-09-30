@@ -74,6 +74,14 @@ export class Product extends BaseUuidEntity {
   prices: Price[];
 
   @ApiProperty({
+    description: 'Средняя цена товара (WAC)',
+    example: 15000.5,
+    minimum: 1,
+  })
+  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
+  wac: number;
+
+  @ApiProperty({
     description: 'Дата создания записи',
     example: '2024-01-15T10:30:00.000Z',
   })

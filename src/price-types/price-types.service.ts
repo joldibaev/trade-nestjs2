@@ -20,20 +20,27 @@ export class PriceTypesService {
   }
 
   async findAll(findPriceTypesDto?: FindPriceTypesDto): Promise<PriceType[]> {
-    const whereCondition: FindOptionsWhere<PriceType> = {};
+    const queryBuilder =
+      this.priceTypeRepository.createQueryBuilder('priceType');
 
-    if (findPriceTypesDto?.byUsage) {
-      // Include both specific usage and 'both' usage
-      whereCondition.usage =
-        findPriceTypesDto.byUsage === 'both'
-          ? 'both'
-          : In([findPriceTypesDto.byUsage, 'both']);
+    if (findPriceTypesDto?.byUsage && findPriceTypesDto.byUsage.length > 0) {
+      // Filter by usage array containing any of the specified usages
+      const usageConditions = findPriceTypesDto.byUsage
+        .map((_, index) => `:usage${index} = ANY(priceType.usage)`)
+        .join(' OR ');
+
+      const usageParams = findPriceTypesDto.byUsage.reduce(
+        (params, usage, index) => {
+          params[`usage${index}`] = usage;
+          return params;
+        },
+        {} as Record<string, string>,
+      );
+
+      queryBuilder.andWhere(`(${usageConditions})`, usageParams);
     }
 
-    return await this.priceTypeRepository.find({
-      where: whereCondition,
-      order: { createdAt: 'DESC' },
-    });
+    return await queryBuilder.orderBy('priceType.createdAt', 'DESC').getMany();
   }
 
   async findOne(id: string): Promise<PriceType> {

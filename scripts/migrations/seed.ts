@@ -500,6 +500,7 @@ async function seedDatabase() {
     // Создаем документы корректировки остатков
     const documentAdjustments: any[] = [];
     const operations: any[] = [];
+    const operationProps: any[] = [];
     const storeIdsQuery = await dataSource.query(
       'SELECT id FROM stores LIMIT 1',
     );
@@ -548,15 +549,26 @@ async function seedDatabase() {
         ) {
           const quantity = Math.floor(product.quantity); // Округляем до целого числа
           const price = product.price;
+          const operationId = uuidv7();
 
           operations.push({
-            id: uuidv7(),
+            id: operationId,
             quantity: quantity,
-            price: price,
             quantityPositive: true, // По умолчанию true для корректировки остатков
             productId: productId,
             storeId: defaultStoreId,
             documentAdjustmentId: documentAdjustmentId, // Привязываем к документу корректировки
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            deletedAt: null,
+          });
+
+          // Создаем OperationProps для этой операции
+          operationProps.push({
+            id: uuidv7(), // Генерируем UUID для operation_props
+            operationId: operationId,
+            price: price,
+            exchangeRate: 1.0, // Дефолтный курс валют
             createdAt: new Date(),
             updatedAt: new Date(),
             deletedAt: null,
@@ -566,10 +578,17 @@ async function seedDatabase() {
 
       if (operations.length > 0) {
         await seedTable(dataSource, 'operations', operations);
+        console.log(
+          `✅ Operations seeded (${operations.length} operations from XLSX products)`,
+        );
       }
-      console.log(
-        `✅ Operations seeded (${operations.length} operations from XLSX products)`,
-      );
+
+      if (operationProps.length > 0) {
+        await seedTable(dataSource, 'operation_props', operationProps);
+        console.log(
+          `✅ Operation props seeded (${operationProps.length} operation props)`,
+        );
+      }
     } else {
       console.log('⚠️ Skipping operations seeding - no store or user found');
     }
@@ -588,6 +607,7 @@ async function seedDatabase() {
     console.log(`💵 Prices: ${prices.length}`);
     console.log(`📋 Document adjustments: ${documentAdjustments.length}`);
     console.log(`🔄 Operations: ${operations.length}`);
+    console.log(`⚙️ Operation props: ${operationProps.length}`);
   } catch (error) {
     console.error('❌ Error during database seeding:', error);
     process.exit(1);
