@@ -16,6 +16,7 @@ scope: project
 - При создании фильтра можешь использовать const whereCondition: FindOptionsWhere<T> = {};
 - Основная валюта UZS (минимум 1, ниже быть не может. Например: 0.1 - не верно)
 - Должна быть валидация ValidationPipe, ParseIntPipe, ParseBoolPipe, ParseArrayPipe, ParseUUIDPipe и другие
+- Не пиши в ручную миграцию, используй команды в package.json
 
 ## DTO
 - dto на фронте и на бэке должны быть одинаковые. приоритет на бэк

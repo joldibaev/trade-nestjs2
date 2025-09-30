@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { In, Repository, EntityManager } from 'typeorm';
 import { Product } from './entities/product.entity';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -63,6 +63,9 @@ export class ProductsService {
         barcodes: true,
         quantities: {
           store: true,
+        },
+        prices: {
+          type: true,
         },
       },
     });
@@ -127,5 +130,20 @@ export class ProductsService {
       .orderBy('product.createdAt', 'DESC')
       .addOrderBy('product.name', 'ASC')
       .getMany();
+  }
+
+  /**
+   * Обновляет WAC для товара
+   */
+  async updateWAC(
+    productId: string,
+    wac: number,
+    manager?: EntityManager,
+  ): Promise<void> {
+    const productRepo = manager
+      ? manager.getRepository(Product)
+      : this.productRepository;
+
+    await productRepo.update(productId, { wac });
   }
 }

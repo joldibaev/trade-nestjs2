@@ -21,6 +21,7 @@ import { SuccessResponse } from '../shared/interfaces/success-response.interface
 import { ProductsService } from '../products/products.service';
 import { DocumentPurchasesService } from '../document-purchases/document-purchases.service';
 import { ProductQuantitiesService } from '../product-quantities/product-quantities.service';
+import { OperationPropsService } from '../operation-props/operation-props.service';
 
 @Injectable()
 export class OperationsService {
@@ -30,6 +31,7 @@ export class OperationsService {
     private readonly productsService: ProductsService,
     private readonly documentPurchasesService: DocumentPurchasesService,
     private readonly productQuantitiesService: ProductQuantitiesService,
+    private readonly operationPropsService: OperationPropsService,
     private readonly dataSource: DataSource,
   ) {}
 
@@ -48,15 +50,42 @@ export class OperationsService {
       const storeId = await this.getStoreIdFromDocument(createOperationDto);
 
       const operation = entityManager.create(Operation, {
-        ...createOperationDto,
+        quantity: createOperationDto.quantity,
+        quantityPositive: createOperationDto.quantityPositive,
+        productId: createOperationDto.productId,
         storeId,
+        documentPurchaseId: createOperationDto.documentPurchaseId,
+        documentSellId: createOperationDto.documentSellId,
+        documentAdjustmentId: createOperationDto.documentAdjustmentId,
       });
       const savedOperation = await entityManager.save(Operation, operation);
+
+      // Создаем свойства операции если они переданы
+      if (createOperationDto.operationProps) {
+        await this.operationPropsService.create(
+          {
+            operationId: savedOperation.id,
+            price: createOperationDto.operationProps.price,
+            exchangeRate: createOperationDto.operationProps.exchangeRate,
+          },
+          entityManager,
+        );
+      }
+
+      // TODO: Реализовать создание цен товара через Price entity
+      // if (createOperationDto.prices && createOperationDto.prices.length > 0) {
+      //   // Создание цен будет реализовано позже
+      // }
 
       await this.productQuantitiesService.recalculate(
         [savedOperation.productId],
         entityManager,
       );
+
+      // Пересчитываем WAC если это операция покупки
+      if (savedOperation.documentPurchaseId) {
+        await this.recalculateWAC([savedOperation.productId], entityManager);
+      }
 
       return savedOperation;
     };
@@ -99,6 +128,7 @@ export class OperationsService {
         'documentPurchase',
         'documentSell',
         'documentAdjustment',
+        'operationProps',
       ],
       order: { createdAt: 'DESC' },
     });
@@ -117,6 +147,7 @@ export class OperationsService {
         'documentPurchase',
         'documentSell',
         'documentAdjustment',
+        'operationProps',
       ],
     });
 
@@ -311,5 +342,64 @@ export class OperationsService {
     throw new BadRequestException(
       'Операция должна быть связана с одним из документов',
     );
+  }
+
+  /**
+   * Рассчитывает среднюю цену (WAC) для товара на основе операций покупки
+   * WAC = (Общая стоимость остатков) / (Общее количество остатков)
+   */
+  async calculateWAC(
+    productId: string,
+    manager?: EntityManager,
+  ): Promise<number> {
+    const operationRepo = manager
+      ? manager.getRepository(Operation)
+      : this.operationRepository;
+
+    // Получаем все операции покупки для товара
+    const purchaseOperations = await operationRepo
+      .createQueryBuilder('operation')
+      .where('operation.productId = :productId', { productId })
+      .andWhere('operation.quantityPositive = true')
+      .andWhere('operation.documentPurchaseId IS NOT NULL')
+      .getMany();
+
+    if (purchaseOperations.length === 0) {
+      return 0;
+    }
+
+    // Рассчитываем общую стоимость и общее количество
+    let totalCost = 0;
+    let totalQuantity = 0;
+
+    for (const operation of purchaseOperations) {
+      if (operation.operationProps) {
+        const cost = operation.operationProps.price * operation.quantity;
+        totalCost += cost;
+        totalQuantity += operation.quantity;
+      }
+    }
+
+    // Возвращаем среднюю цену или 0, если нет операций
+    return totalQuantity > 0 ? totalCost / totalQuantity : 0;
+  }
+
+  /**
+   * Пересчитывает WAC для указанных товаров
+   */
+  async recalculateWAC(
+    productIds: string[],
+    manager?: EntityManager,
+  ): Promise<void> {
+    if (!productIds || productIds.length === 0) {
+      return;
+    }
+
+    for (const productId of productIds) {
+      const wac = await this.calculateWAC(productId, manager);
+
+      // Обновляем WAC через ProductsService
+      await this.productsService.updateWAC(productId, wac, manager);
+    }
   }
 }

@@ -5,6 +5,7 @@ import {
   UpdateDateColumn,
   DeleteDateColumn,
   ManyToOne,
+  OneToOne,
   JoinColumn,
   Index,
 } from 'typeorm';
@@ -15,6 +16,7 @@ import { DocumentPurchase } from '../../document-purchases/entities/document-pur
 import { DocumentSell } from '../../document-sells/entities/document-sell.entity';
 import { DocumentAdjustment } from '../../document-adjustments/entities/document-adjustment.entity';
 import { BaseUuidEntity } from '../../shared/entities/base-uuid.entity';
+import { OperationProps } from '../../operation-props/entities/operation-props.entity';
 
 @Entity('operations')
 @Index(['productId'])
@@ -34,12 +36,14 @@ export class Operation extends BaseUuidEntity {
   quantity: number;
 
   @ApiProperty({
-    description: 'Цена за единицу в операции',
-    example: 10000.5,
-    minimum: 1,
+    description: 'Свойства операции (цена и курс валют)',
+    type: () => OperationProps,
+    required: false,
   })
-  @Column({ type: 'decimal', precision: 10, scale: 2 })
-  price: number;
+  @OneToOne(() => OperationProps, operationProps => operationProps.operation, {
+    nullable: true,
+  })
+  operationProps?: OperationProps;
 
   @ApiProperty({
     description:

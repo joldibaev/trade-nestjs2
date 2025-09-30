@@ -22,15 +22,17 @@ export class PriceType extends BaseUuidEntity {
 
   @ApiProperty({
     description: 'Где используется тип цены',
-    example: 'sale',
-    enum: ['sale', 'purchase', 'both'],
+    example: ['sale'],
+    type: [String],
+    enum: ['sale', 'purchase'],
+    isArray: true,
   })
   @Column({
-    type: 'enum',
-    enum: ['sale', 'purchase', 'both'],
-    default: 'sale',
+    type: 'text',
+    array: true,
+    default: '{}',
   })
-  usage: 'sale' | 'purchase' | 'both';
+  usage: ('sale' | 'purchase')[];
 
   @ApiProperty({
     description: 'Дата создания записи',

@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Currency } from './entities/currency.entity';
 import { CreateCurrencyDto } from './dto/create-currency.dto';
 import { UpdateCurrencyDto } from './dto/update-currency.dto';
@@ -22,6 +22,17 @@ export class CurrenciesService {
     return await this.currencyRepository.find({
       order: { createdAt: 'DESC' },
     });
+  }
+
+  async getLatest(): Promise<Currency> {
+    const currencies = await this.currencyRepository.find({
+      order: { createdAt: 'DESC' },
+      take: 1,
+    });
+    if (currencies.length === 0) {
+      throw new NotFoundException('Курс валюты не найден');
+    }
+    return currencies[0];
   }
 
   async findOne(id: string): Promise<Currency> {

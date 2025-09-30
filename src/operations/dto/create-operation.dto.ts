@@ -5,9 +5,64 @@ import {
   IsOptional,
   IsUUID,
   Min,
+  IsArray,
+  ValidateNested,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
+
+export class OperationPropsDto {
+  @ApiProperty({
+    description: 'Цена за единицу в операции',
+    example: 10000.5,
+    minimum: 1,
+  })
+  @IsNumber(
+    { maxDecimalPlaces: 2 },
+    { message: 'price должен быть числом с максимум 2 знаками после запятой' },
+  )
+  @Min(1, { message: 'Минимальная цена должна быть не менее 1 UZS' })
+  @Type(() => Number)
+  price: number;
+
+  @ApiProperty({
+    description: 'Курс валют на момент операции',
+    example: 12500.5,
+    minimum: 0.01,
+  })
+  @IsNumber(
+    { maxDecimalPlaces: 2 },
+    {
+      message:
+        'exchangeRate должен быть числом с максимум 2 знаками после запятой',
+    },
+  )
+  @Min(0.01, { message: 'Минимальный курс должен быть не менее 0.01' })
+  @Type(() => Number)
+  exchangeRate: number;
+}
+
+export class ProductPriceDto {
+  @ApiProperty({
+    description: 'ID типа цены',
+    example: '01995812-d080-7d99-81c8-0b384a652585',
+  })
+  @IsUUID('7', { message: 'priceTypeId должен быть валидным UUID v7' })
+  priceTypeId: string;
+
+  @ApiProperty({
+    description: 'Цена в UZS',
+    example: 15000.5,
+    minimum: 1,
+  })
+  @IsNumber(
+    { maxDecimalPlaces: 2 },
+    { message: 'price должен быть числом с максимум 2 знаками после запятой' },
+  )
+  @Min(1, { message: 'Минимальная цена должна быть не менее 1 UZS' })
+  @Type(() => Number)
+  price: number;
+}
 
 export class CreateOperationDto {
   @ApiProperty({
@@ -18,19 +73,6 @@ export class CreateOperationDto {
   @IsInt({ message: 'quantity должен быть целым числом' })
   @Min(1)
   quantity: number;
-
-  @ApiProperty({
-    description: 'Price per unit in this operation',
-    example: 1000,
-    minimum: 1,
-  })
-  @IsNumber(
-    { maxDecimalPlaces: 2 },
-    { message: 'price должен быть числом с максимум 2 знаками после запятой' },
-  )
-  @Min(1, { message: 'Минимальная цена должна быть не менее 1 UZS' })
-  @Type(() => Number)
-  price: number;
 
   @ApiProperty({
     description:
@@ -85,6 +127,27 @@ export class CreateOperationDto {
   @IsInt({ message: 'documentAdjustmentId должен быть целым числом' })
   @Min(1, { message: 'documentAdjustmentId должен быть больше 0' })
   documentAdjustmentId?: number;
+
+  @ApiProperty({
+    description: 'Свойства операции (цена и курс валют)',
+    type: OperationPropsDto,
+    required: false,
+  })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => OperationPropsDto)
+  operationProps?: OperationPropsDto;
+
+  @ApiProperty({
+    description: 'Цены товара для разных типов цен',
+    type: [ProductPriceDto],
+    required: false,
+  })
+  @IsOptional()
+  @IsArray({ message: 'prices должен быть массивом' })
+  @ValidateNested({ each: true })
+  @Type(() => ProductPriceDto)
+  prices?: ProductPriceDto[];
 }
 
 /*
