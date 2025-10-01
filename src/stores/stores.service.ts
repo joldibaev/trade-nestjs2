@@ -1,49 +1,58 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In } from 'typeorm';
-import { Store } from './entities/store.entity';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateStoreDto } from './dto/create-store.dto';
 import { UpdateStoreDto } from './dto/update-store.dto';
 import { SuccessResponse } from '../shared/interfaces/success-response.interface';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class StoresService {
-  constructor(
-    @InjectRepository(Store)
-    private readonly storeRepository: Repository<Store>,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  async create(createStoreDto: CreateStoreDto): Promise<Store> {
-    const store = this.storeRepository.create(createStoreDto);
-    return await this.storeRepository.save(store);
-  }
-
-  async findAll(): Promise<Store[]> {
-    return await this.storeRepository.find({
-      order: { createdAt: 'DESC' },
+  async create(createStoreDto: CreateStoreDto) {
+    return this.prisma.store.create({
+      data: createStoreDto,
     });
   }
 
-  async findOne(id: string): Promise<Store> {
-    const store = await this.storeRepository.findOne({ where: { id } });
+  async findAll() {
+    return this.prisma.store.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async findOne(id: string) {
+    const store = await this.prisma.store.findUnique({
+      where: { id },
+    });
+
     if (!store) {
       throw new NotFoundException(`Склад с ID ${id} не найден`);
     }
+
     return store;
   }
 
-  async update(id: string, updateStoreDto: UpdateStoreDto): Promise<Store> {
-    await this.storeRepository.update(id, updateStoreDto);
-    return await this.findOne(id);
+  async update(id: string, updateStoreDto: UpdateStoreDto) {
+    try {
+      return this.prisma.store.update({
+        where: { id },
+        data: updateStoreDto,
+      });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          throw new NotFoundException('Склад не найден');
+        }
+      }
+      throw error;
+    }
   }
 
   async deleteMany(ids: string[]): Promise<SuccessResponse> {
-    await this.storeRepository.softDelete({ id: In(ids) });
-    return { success: true };
-  }
-
-  async recoveryMany(ids: string[]): Promise<SuccessResponse> {
-    await this.storeRepository.restore({ id: In(ids) });
+    await this.prisma.store.deleteMany({
+      where: { id: { in: ids } },
+    });
     return { success: true };
   }
 }

@@ -10,16 +10,11 @@ import {
   HttpStatus,
   UseGuards,
 } from '@nestjs/common';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { CurrenciesService } from './currencies.service';
 import { CreateCurrencyDto } from './dto/create-currency.dto';
 import { UpdateCurrencyDto } from './dto/update-currency.dto';
 import { SuccessResponseDto } from '../shared/interfaces/success-response.interface';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiParam,
-  ApiBearerAuth,
-} from '@nestjs/swagger';
 import { DeleteCurrenciesDto } from './dto/delete-currencies.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
@@ -31,43 +26,26 @@ export class CurrenciesController {
   constructor(private readonly currenciesService: CurrenciesService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Создать новую валюту' })
   create(@Body() createCurrencyDto: CreateCurrencyDto) {
     return this.currenciesService.create(createCurrencyDto);
   }
 
   @Get()
-  @ApiOperation({ summary: 'Получить все валюты' })
   findAll() {
     return this.currenciesService.findAll();
   }
 
   @Get('latest')
-  @ApiOperation({ summary: 'Получить последний курс валюты' })
   getLatest() {
     return this.currenciesService.getLatest();
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Получить валюту по ID' })
-  @ApiParam({
-    name: 'id',
-    description: 'UUID v7 валюты',
-    type: String,
-    format: 'uuid',
-  })
   findOne(@Param('id', new ParseUUIDPipe({ version: '7' })) id: string) {
     return this.currenciesService.findOne(id);
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: 'Обновить валюту по ID' })
-  @ApiParam({
-    name: 'id',
-    description: 'UUID v7 валюты',
-    type: String,
-    format: 'uuid',
-  })
   update(
     @Param('id', new ParseUUIDPipe({ version: '7' })) id: string,
     @Body() updateCurrencyDto: UpdateCurrencyDto,
@@ -77,19 +55,7 @@ export class CurrenciesController {
 
   @Post('delete')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Мягко удалить несколько валют по ID' })
-  deleteMany(
-    @Body() deleteCurrenciesDto: DeleteCurrenciesDto,
-  ): Promise<SuccessResponseDto> {
+  deleteMany(@Body() deleteCurrenciesDto: DeleteCurrenciesDto) {
     return this.currenciesService.deleteMany(deleteCurrenciesDto.ids);
-  }
-
-  @Post('restore')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Восстановить несколько валют по ID' })
-  recoveryMany(
-    @Body() deleteCurrenciesDto: DeleteCurrenciesDto,
-  ): Promise<SuccessResponseDto> {
-    return this.currenciesService.recoveryMany(deleteCurrenciesDto.ids);
   }
 }

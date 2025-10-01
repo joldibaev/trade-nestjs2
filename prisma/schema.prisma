@@ -1,0 +1,279 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User
+model User {
+  id           String   @id @default(uuid(7)) @db.Uuid
+  username     String
+  password     String
+  firstName    String?
+  lastName     String?
+  role         String   @default("user")
+  refreshToken String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([username])
+}
+
+// Store
+model Store {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  cashboxes Cashbox[]
+
+  documents Document[]
+
+  quantities ProductQuantity[]
+
+  @@unique([name])
+}
+
+model Cashbox {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  storeId String @db.Uuid
+
+  @@unique([storeId, name])
+}
+
+// Customer
+model Customer {
+  id           String  @id @default(uuid(7)) @db.Uuid
+  name         String  @unique
+  contactPerson String?
+  phone        String?
+  email        String?
+  address      String?
+  notes        String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Vendor
+model Vendor {
+  id           String  @id @default(uuid(7)) @db.Uuid
+  name         String  @unique
+  contactPerson String?
+  phone        String?
+  email        String?
+  address      String?
+  notes        String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Category
+model Category {
+  id          String   @id @default(uuid(7)) @db.Uuid
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  parentId String?    @db.Uuid
+  parent   Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children Category[] @relation("CategoryHierarchy")
+
+  products Product[]
+}
+
+// Product
+model Product {
+  id          String   @id @default(uuid(7)) @db.Uuid
+  name        String
+  code        String
+  article     String?
+  description String?
+  wac         Float?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  category   Category? @relation(fields: [categoryId], references: [id])
+  categoryId String?   @db.Uuid
+
+  barcodes Barcode[]
+
+  prices Price[]
+
+  quantities ProductQuantity[]
+
+  documentLine DocumentLine[]
+
+  @@unique([name])
+  @@unique([code])
+}
+
+// Product Quantity
+model ProductQuantity {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  quantity  Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  product   Product @relation(fields: [productId], references: [id])
+  productId String  @db.Uuid
+
+  store   Store @relation(fields: [storeId], references: [id])
+  storeId String @db.Uuid
+
+  @@unique([productId, storeId])
+}
+
+// Price
+model PriceType {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  name      String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  prices Price[]
+
+  @@unique([name])
+}
+
+model Price {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  value     Decimal  @db.Decimal(18, 2)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  type   PriceType @relation(fields: [typeId], references: [id])
+  typeId String    @db.Uuid
+
+  product   Product @relation(fields: [productId], references: [id])
+  productId String  @db.Uuid
+
+  @@unique([productId, typeId])
+}
+
+// Barcode
+enum BarcodeType {
+  EAN13
+  EAN8
+  UPC_A
+  UPC_E
+  CODE128
+  QR
+  OTHER
+}
+
+model Barcode {
+  id        String      @id @default(uuid(7)) @db.Uuid
+  code      String
+  type      BarcodeType
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  product   Product @relation(fields: [productId], references: [id])
+  productId String  @db.Uuid
+
+  @@unique([productId, code])
+}
+
+// Currency
+model Currency {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  code      String   @unique
+  name      String
+  symbol    String
+  rate      Decimal  @db.Decimal(18, 2)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Documents
+model Document {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  note      String?
+  performed Boolean  @default(false)
+  date      DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  store   Store  @relation(fields: [storeId], references: [id])
+  storeId String @db.Uuid
+
+  purchase       DocumentPurchase?
+  sale           DocumentSale?
+  movement       DocumentMovement?
+  adjustment     DocumentAdjustment?
+  returnCustomer ReturnCustomer?
+  returnSupplier ReturnSupplier?
+
+  currency Decimal @default(0) @db.Decimal(18, 2)
+
+  line DocumentLine[]
+}
+
+model DocumentPurchase {
+  id Int @id @default(autoincrement())
+
+  document   Document @relation(fields: [documentId], references: [id])
+  documentId String   @unique @db.Uuid
+}
+
+model DocumentSale {
+  id Int @id @default(autoincrement())
+
+  document   Document @relation(fields: [documentId], references: [id])
+  documentId String   @unique @db.Uuid
+}
+
+model DocumentMovement {
+  id Int @id @default(autoincrement())
+
+  document   Document @relation(fields: [documentId], references: [id])
+  documentId String   @unique @db.Uuid
+}
+
+model DocumentAdjustment {
+  id Int @id @default(autoincrement())
+
+  document   Document @relation(fields: [documentId], references: [id])
+  documentId String   @unique @db.Uuid
+}
+
+model ReturnCustomer {
+  id Int @id @default(autoincrement())
+
+  document   Document @relation(fields: [documentId], references: [id])
+  documentId String   @unique @db.Uuid
+}
+
+model ReturnSupplier {
+  id Int @id @default(autoincrement())
+
+  document   Document @relation(fields: [documentId], references: [id])
+  documentId String   @unique @db.Uuid
+}
+
+// Document Line
+model DocumentLine {
+  id String @id @default(uuid(7)) @db.Uuid
+
+  document   Document @relation(fields: [documentId], references: [id])
+  documentId String @db.Uuid
+
+  product   Product @relation(fields: [productId], references: [id])
+  productId String  @db.Uuid
+
+  quantity Int
+  price    Decimal @default(0) @db.Decimal(18, 2)
+}

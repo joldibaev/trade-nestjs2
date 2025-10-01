@@ -3,24 +3,20 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
-import { Category } from './entities/category.entity';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { SuccessResponse } from '../shared/interfaces/success-response.interface';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class CategoriesService {
-  constructor(
-    @InjectRepository(Category)
-    private readonly categoryRepository: Repository<Category>,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  async create(createCategoryDto: CreateCategoryDto): Promise<Category> {
+  async create(createCategoryDto: CreateCategoryDto) {
     // Validate parent category exists if parentId is provided
     if (createCategoryDto.parentId) {
-      const parentCategory = await this.categoryRepository.findOne({
+      const parentCategory = await this.prisma.category.findUnique({
         where: { id: createCategoryDto.parentId },
       });
       if (!parentCategory) {
@@ -30,35 +26,47 @@ export class CategoriesService {
       }
     }
 
-    const category = this.categoryRepository.create(createCategoryDto);
-    return await this.categoryRepository.save(category);
+    try {
+      return this.prisma.category.create({
+        data: createCategoryDto,
+        include: { parent: true, children: true },
+      });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2003') {
+          throw new NotFoundException(
+            'Родительская категория с указанным ID не найдена',
+          );
+        }
+      }
+      throw error;
+    }
   }
 
-  async findAll(): Promise<Category[]> {
-    return await this.categoryRepository.find({
-      relations: ['parent', 'children'],
-      order: { createdAt: 'DESC' },
+  async findAll() {
+    return this.prisma.category.findMany({
+      include: { parent: true, children: true },
+      orderBy: { createdAt: 'desc' },
     });
   }
 
-  async findOne(id: string): Promise<Category> {
-    const category = await this.categoryRepository.findOne({
+  async findOne(id: string) {
+    const category = await this.prisma.category.findUnique({
       where: { id },
-      relations: ['parent', 'children'],
+      include: { parent: true, children: true },
     });
+
     if (!category) {
       throw new NotFoundException(`Категория с ID ${id} не найдена`);
     }
+
     return category;
   }
 
-  async update(
-    id: string,
-    updateCategoryDto: UpdateCategoryDto,
-  ): Promise<Category> {
+  async update(id: string, updateCategoryDto: UpdateCategoryDto) {
     // Validate parent category exists if parentId is provided
     if (updateCategoryDto.parentId) {
-      const parentCategory = await this.categoryRepository.findOne({
+      const parentCategory = await this.prisma.category.findUnique({
         where: { id: updateCategoryDto.parentId },
       });
       if (!parentCategory) {
@@ -75,25 +83,39 @@ export class CategoriesService {
       }
     }
 
-    await this.categoryRepository.update(id, updateCategoryDto);
-    return await this.findOne(id);
+    try {
+      return this.prisma.category.update({
+        where: { id },
+        data: updateCategoryDto,
+        include: { parent: true, children: true },
+      });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          throw new NotFoundException('Категория не найдена');
+        }
+        if (error.code === 'P2003') {
+          throw new NotFoundException(
+            'Родительская категория с указанным ID не найдена',
+          );
+        }
+      }
+      throw error;
+    }
   }
 
   async deleteMany(ids: string[]): Promise<SuccessResponse> {
-    await this.categoryRepository.softDelete({ id: In(ids) });
+    await this.prisma.category.deleteMany({
+      where: { id: { in: ids } },
+    });
     return { success: true };
   }
 
-  async recoveryMany(ids: string[]): Promise<SuccessResponse> {
-    await this.categoryRepository.restore({ id: In(ids) });
-    return { success: true };
-  }
-
-  async findByParentId(parentId: string): Promise<Category[]> {
-    return await this.categoryRepository.find({
+  async findByParentId(parentId: string) {
+    return this.prisma.category.findMany({
       where: { parentId },
-      relations: ['parent', 'children'],
-      order: { createdAt: 'DESC' },
+      include: { parent: true, children: true },
+      orderBy: { createdAt: 'desc' },
     });
   }
 }

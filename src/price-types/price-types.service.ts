@@ -1,73 +1,77 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, FindOptionsWhere, In } from 'typeorm';
-import { PriceType } from './entities/price-type.entity';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreatePriceTypeDto } from './dto/create-price-type.dto';
 import { UpdatePriceTypeDto } from './dto/update-price-type.dto';
 import { FindPriceTypesDto } from './dto/find-price-types.dto';
 import { SuccessResponse } from '../shared/interfaces/success-response.interface';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class PriceTypesService {
-  constructor(
-    @InjectRepository(PriceType)
-    private readonly priceTypeRepository: Repository<PriceType>,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  async create(createPriceTypeDto: CreatePriceTypeDto): Promise<PriceType> {
-    const priceType = this.priceTypeRepository.create(createPriceTypeDto);
-    return await this.priceTypeRepository.save(priceType);
+  async create(createPriceTypeDto: CreatePriceTypeDto) {
+    try {
+      return this.prisma.priceType.create({
+        data: createPriceTypeDto,
+      });
+    } catch (error) {
+      throw error;
+    }
   }
 
-  async findAll(findPriceTypesDto?: FindPriceTypesDto): Promise<PriceType[]> {
-    const queryBuilder =
-      this.priceTypeRepository.createQueryBuilder('priceType');
+  async findAll(findPriceTypesDto?: FindPriceTypesDto) {
+    const whereCondition: Prisma.PriceTypeWhereInput = {};
 
-    if (findPriceTypesDto?.byUsage && findPriceTypesDto.byUsage.length > 0) {
-      // Filter by usage array containing any of the specified usages
-      const usageConditions = findPriceTypesDto.byUsage
-        .map((_, index) => `:usage${index} = ANY(priceType.usage)`)
-        .join(' OR ');
-
-      const usageParams = findPriceTypesDto.byUsage.reduce(
-        (params, usage, index) => {
-          params[`usage${index}`] = usage;
-          return params;
-        },
-        {} as Record<string, string>,
-      );
-
-      queryBuilder.andWhere(`(${usageConditions})`, usageParams);
+    if (findPriceTypesDto?.name) {
+      whereCondition.name = {
+        contains: findPriceTypesDto.name,
+        mode: 'insensitive',
+      };
     }
 
-    return await queryBuilder.orderBy('priceType.createdAt', 'DESC').getMany();
+    if (findPriceTypesDto?.isActive !== undefined) {
+      whereCondition.isActive = findPriceTypesDto.isActive;
+    }
+
+    return this.prisma.priceType.findMany({
+      where: whereCondition,
+      orderBy: { createdAt: 'desc' },
+    });
   }
 
-  async findOne(id: string): Promise<PriceType> {
-    const priceType = await this.priceTypeRepository.findOne({
+  async findOne(id: string) {
+    const priceType = await this.prisma.priceType.findUnique({
       where: { id },
     });
+
     if (!priceType) {
       throw new NotFoundException(`Тип цены с ID ${id} не найден`);
     }
+
     return priceType;
   }
 
-  async update(
-    id: string,
-    updatePriceTypeDto: UpdatePriceTypeDto,
-  ): Promise<PriceType> {
-    await this.priceTypeRepository.update(id, updatePriceTypeDto);
-    return await this.findOne(id);
+  async update(id: string, updatePriceTypeDto: UpdatePriceTypeDto) {
+    try {
+      return this.prisma.priceType.update({
+        where: { id },
+        data: updatePriceTypeDto,
+      });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          throw new NotFoundException('Тип цены не найден');
+        }
+      }
+      throw error;
+    }
   }
 
   async deleteMany(ids: string[]): Promise<SuccessResponse> {
-    await this.priceTypeRepository.softDelete({ id: In(ids) });
-    return { success: true };
-  }
-
-  async recoveryMany(ids: string[]): Promise<SuccessResponse> {
-    await this.priceTypeRepository.restore({ id: In(ids) });
+    await this.prisma.priceType.deleteMany({
+      where: { id: { in: ids } },
+    });
     return { success: true };
   }
 }

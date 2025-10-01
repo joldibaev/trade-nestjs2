@@ -1,12 +1,10 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { PrismaModule } from '../prisma/prisma.module';
 import { CashboxesService } from './cashboxes.service';
 import { CashboxesController } from './cashboxes.controller';
-import { Cashbox } from './entities/cashbox.entity';
-import { StoresModule } from '../stores/stores.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Cashbox]), StoresModule],
+  imports: [PrismaModule],
   controllers: [CashboxesController],
   providers: [CashboxesService],
   exports: [CashboxesService],

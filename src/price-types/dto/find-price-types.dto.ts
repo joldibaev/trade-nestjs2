@@ -1,33 +1,26 @@
-import { IsOptional, IsEnum, IsArray } from 'class-validator';
+import { IsOptional, IsString, IsBoolean } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Transform, Type } from 'class-transformer';
+import { Transform } from 'class-transformer';
 
 export class FindPriceTypesDto {
   @ApiPropertyOptional({
-    description:
-      'Фильтр по использованию типа цены. Возвращает типы цен, которые содержат любое из указанных использований в массиве usage. Можно передать одно значение или массив значений.',
-    example: ['sale'],
-    type: [String],
-    enum: ['sale', 'purchase'],
-    isArray: true,
+    description: 'Поиск по названию типа цены',
+    example: 'Розничная',
   })
   @IsOptional()
-  @IsArray({ message: 'byUsage должен быть массивом' })
-  @IsEnum(['sale', 'purchase'], {
-    each: true,
-    message: 'Каждый элемент byUsage должен быть одним из: sale, purchase',
+  @IsString()
+  name?: string;
+
+  @ApiPropertyOptional({
+    description: 'Фильтр по активности типа цены',
+    example: true,
   })
-  @Transform(({ value }: { value: string | string[] | undefined }) => {
-    if (!value) return undefined;
-    if (Array.isArray(value)) {
-      return value.map(v => v.toLowerCase());
-    }
-    // Handle comma-separated string
-    if (typeof value === 'string' && value.includes(',')) {
-      return value.split(',').map(v => v.trim().toLowerCase());
-    }
-    return [value.toLowerCase()];
+  @IsOptional()
+  @IsBoolean()
+  @Transform(({ value }) => {
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    return value;
   })
-  @Type(() => String)
-  byUsage?: ('sale' | 'purchase')[];
+  isActive?: boolean;
 }

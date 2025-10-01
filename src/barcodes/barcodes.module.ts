@@ -1,8 +1,12 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Barcode } from './entities/barcode.entity';
+import { PrismaModule } from '../prisma/prisma.module';
+import { BarcodesController } from './barcodes.controller';
+import { BarcodesService } from './barcodes.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Barcode])],
+  imports: [PrismaModule],
+  controllers: [BarcodesController],
+  providers: [BarcodesService],
+  exports: [BarcodesService],
 })
 export class BarcodesModule {}

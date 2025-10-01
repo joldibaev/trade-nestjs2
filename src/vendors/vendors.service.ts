@@ -1,49 +1,58 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In } from 'typeorm';
-import { Vendor } from './entities/vendor.entity';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateVendorDto } from './dto/create-vendor.dto';
 import { UpdateVendorDto } from './dto/update-vendor.dto';
 import { SuccessResponse } from '../shared/interfaces/success-response.interface';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class VendorsService {
-  constructor(
-    @InjectRepository(Vendor)
-    private readonly vendorRepository: Repository<Vendor>,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  async create(createVendorDto: CreateVendorDto): Promise<Vendor> {
-    const vendor = this.vendorRepository.create(createVendorDto);
-    return await this.vendorRepository.save(vendor);
-  }
-
-  async findAll(): Promise<Vendor[]> {
-    return await this.vendorRepository.find({
-      order: { createdAt: 'DESC' },
+  async create(createVendorDto: CreateVendorDto) {
+    return this.prisma.vendor.create({
+      data: createVendorDto,
     });
   }
 
-  async findOne(id: string): Promise<Vendor> {
-    const vendor = await this.vendorRepository.findOne({ where: { id } });
+  async findAll() {
+    return this.prisma.vendor.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async findOne(id: string) {
+    const vendor = await this.prisma.vendor.findUnique({
+      where: { id },
+    });
+
     if (!vendor) {
       throw new NotFoundException(`Поставщик с ID ${id} не найден`);
     }
+
     return vendor;
   }
 
-  async update(id: string, updateVendorDto: UpdateVendorDto): Promise<Vendor> {
-    await this.vendorRepository.update(id, updateVendorDto);
-    return await this.findOne(id);
+  async update(id: string, updateVendorDto: UpdateVendorDto) {
+    try {
+      return this.prisma.vendor.update({
+        where: { id },
+        data: updateVendorDto,
+      });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          throw new NotFoundException('Поставщик не найден');
+        }
+      }
+      throw error;
+    }
   }
 
   async deleteMany(ids: string[]): Promise<SuccessResponse> {
-    await this.vendorRepository.softDelete({ id: In(ids) });
-    return { success: true };
-  }
-
-  async recoveryMany(ids: string[]): Promise<SuccessResponse> {
-    await this.vendorRepository.restore({ id: In(ids) });
+    await this.prisma.vendor.deleteMany({
+      where: { id: { in: ids } },
+    });
     return { success: true };
   }
 }

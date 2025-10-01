@@ -15,16 +15,28 @@ export class CreateProductDto {
   name: string;
 
   @ApiProperty({
+    description: 'Product code',
+    example: 'IPH15PRO-001',
+    maxLength: 100,
+  })
+  @IsString({ message: 'Код товара должен быть строкой' })
+  @IsNotEmpty({ message: 'Код товара обязателен' })
+  @MaxLength(100, {
+    message: 'Код товара не должен превышать 100 символов',
+  })
+  code: string;
+
+  @ApiProperty({
     description: 'Product article/SKU',
     example: 'IPH15PRO-256-BLK',
     maxLength: 100,
+    required: false,
   })
   @IsString({ message: 'Артикул товара должен быть строкой' })
-  @IsNotEmpty({ message: 'Артикул товара обязателен' })
   @MaxLength(100, {
     message: 'Артикул товара не должен превышать 100 символов',
   })
-  article: string;
+  article?: string;
 
   @ApiProperty({
     description: 'Category ID',

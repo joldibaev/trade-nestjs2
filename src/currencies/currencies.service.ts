@@ -1,65 +1,70 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
-import { Currency } from './entities/currency.entity';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateCurrencyDto } from './dto/create-currency.dto';
 import { UpdateCurrencyDto } from './dto/update-currency.dto';
 import { SuccessResponse } from '../shared/interfaces/success-response.interface';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class CurrenciesService {
-  constructor(
-    @InjectRepository(Currency)
-    private readonly currencyRepository: Repository<Currency>,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  async create(createCurrencyDto: CreateCurrencyDto): Promise<Currency> {
-    const currency = this.currencyRepository.create(createCurrencyDto);
-    return await this.currencyRepository.save(currency);
-  }
-
-  async findAll(): Promise<Currency[]> {
-    return await this.currencyRepository.find({
-      order: { createdAt: 'DESC' },
+  async create(createCurrencyDto: CreateCurrencyDto) {
+    return this.prisma.currency.create({
+      data: createCurrencyDto,
     });
   }
 
-  async getLatest(): Promise<Currency> {
-    const currencies = await this.currencyRepository.find({
-      order: { createdAt: 'DESC' },
-      take: 1,
+  async findAll() {
+    return this.prisma.currency.findMany({
+      orderBy: { createdAt: 'desc' },
     });
-    if (currencies.length === 0) {
+  }
+
+  async getLatest() {
+    const currency = await this.prisma.currency.findFirst({
+      orderBy: { createdAt: 'desc' },
+    });
+
+    if (!currency) {
       throw new NotFoundException('Курс валюты не найден');
     }
-    return currencies[0];
-  }
 
-  async findOne(id: string): Promise<Currency> {
-    const currency = await this.currencyRepository.findOne({
-      where: { id },
-    });
-    if (!currency) {
-      throw new NotFoundException(`Валюта с ID ${id} не найдена`);
-    }
     return currency;
   }
 
-  async update(
-    id: string,
-    updateCurrencyDto: UpdateCurrencyDto,
-  ): Promise<Currency> {
-    await this.currencyRepository.update(id, updateCurrencyDto);
-    return await this.findOne(id);
+  async findOne(id: string) {
+    const currency = await this.prisma.currency.findUnique({
+      where: { id },
+    });
+
+    if (!currency) {
+      throw new NotFoundException(`Валюта с ID ${id} не найдена`);
+    }
+
+    return currency;
+  }
+
+  async update(id: string, updateCurrencyDto: UpdateCurrencyDto) {
+    try {
+      return this.prisma.currency.update({
+        where: { id },
+        data: updateCurrencyDto,
+      });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          throw new NotFoundException('Валюта не найдена');
+        }
+      }
+      throw error;
+    }
   }
 
   async deleteMany(ids: string[]): Promise<SuccessResponse> {
-    await this.currencyRepository.softDelete({ id: In(ids) });
-    return { success: true };
-  }
-
-  async recoveryMany(ids: string[]): Promise<SuccessResponse> {
-    await this.currencyRepository.restore({ id: In(ids) });
+    await this.prisma.currency.deleteMany({
+      where: { id: { in: ids } },
+    });
     return { success: true };
   }
 }

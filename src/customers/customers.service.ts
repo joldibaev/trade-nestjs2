@@ -1,52 +1,58 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In } from 'typeorm';
-import { Customer } from './entities/customer.entity';
+import { PrismaService } from '../prisma/prisma.service';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
 import { SuccessResponse } from '../shared/interfaces/success-response.interface';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class CustomersService {
-  constructor(
-    @InjectRepository(Customer)
-    private readonly customerRepository: Repository<Customer>,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  async create(createCustomerDto: CreateCustomerDto): Promise<Customer> {
-    const customer = this.customerRepository.create(createCustomerDto);
-    return await this.customerRepository.save(customer);
-  }
-
-  async findAll(): Promise<Customer[]> {
-    return await this.customerRepository.find({
-      order: { createdAt: 'DESC' },
+  async create(createCustomerDto: CreateCustomerDto) {
+    return this.prisma.customer.create({
+      data: createCustomerDto,
     });
   }
 
-  async findOne(id: string): Promise<Customer> {
-    const customer = await this.customerRepository.findOne({ where: { id } });
+  async findAll() {
+    return this.prisma.customer.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async findOne(id: string) {
+    const customer = await this.prisma.customer.findUnique({
+      where: { id },
+    });
+
     if (!customer) {
       throw new NotFoundException(`Клиент с ID ${id} не найден`);
     }
+
     return customer;
   }
 
-  async update(
-    id: string,
-    updateCustomerDto: UpdateCustomerDto,
-  ): Promise<Customer> {
-    await this.customerRepository.update(id, updateCustomerDto);
-    return await this.findOne(id);
+  async update(id: string, updateCustomerDto: UpdateCustomerDto) {
+    try {
+      return this.prisma.customer.update({
+        where: { id },
+        data: updateCustomerDto,
+      });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          throw new NotFoundException('Клиент не найден');
+        }
+      }
+      throw error;
+    }
   }
 
   async deleteMany(ids: string[]): Promise<SuccessResponse> {
-    await this.customerRepository.softDelete({ id: In(ids) });
-    return { success: true };
-  }
-
-  async recoveryMany(ids: string[]): Promise<SuccessResponse> {
-    await this.customerRepository.restore({ id: In(ids) });
+    await this.prisma.customer.deleteMany({
+      where: { id: { in: ids } },
+    });
     return { success: true };
   }
 }

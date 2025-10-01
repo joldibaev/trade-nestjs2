@@ -3,21 +3,17 @@ import {
   NotFoundException,
   ConflictException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { PrismaService } from '../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
-import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
+  async create(createUserDto: CreateUserDto) {
     // Check if user with this username already exists
     const existingUser = await this.findByUsername(createUserDto.username);
     if (existingUser) {
@@ -25,70 +21,99 @@ export class UsersService {
     }
 
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-    const user = this.userRepository.create({
-      ...createUserDto,
-      password: hashedPassword,
-    });
-    return await this.userRepository.save(user);
+
+    try {
+      return this.prisma.user.create({
+        data: {
+          ...createUserDto,
+          password: hashedPassword,
+        },
+      });
+    } catch (error) {
+      throw error;
+    }
   }
 
-  async findAll(): Promise<User[]> {
-    return await this.userRepository.find({
-      order: { createdAt: 'DESC' },
+  async findAll() {
+    return this.prisma.user.findMany({
+      orderBy: { createdAt: 'desc' },
     });
   }
 
-  async findOne(id: string): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { id } });
+  async findOne(id: string) {
+    const user = await this.prisma.user.findUnique({ where: { id } });
     if (!user) {
       throw new NotFoundException(`Пользователь с ID ${id} не найден`);
     }
     return user;
   }
 
-  async findByUsername(username: string): Promise<User | null> {
-    return await this.userRepository.findOne({
+  async findByUsername(username: string) {
+    return this.prisma.user.findFirst({
       where: { username },
     });
   }
 
-  async findByUsernameWithPassword(username: string): Promise<User | null> {
-    return await this.userRepository.findOne({
+  async findByUsernameWithPassword(username: string) {
+    return this.prisma.user.findFirst({
       where: { username },
-      select: [
-        'id',
-        'username',
-        'password',
-        'firstName',
-        'lastName',
-        'createdAt',
-        'updatedAt',
-      ],
+      select: {
+        id: true,
+        username: true,
+        password: true,
+        firstName: true,
+        lastName: true,
+        role: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     });
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
+  async update(id: string, updateUserDto: UpdateUserDto) {
     // If password is being updated, hash it
     if (updateUserDto.password) {
       updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
     }
 
-    await this.userRepository.update(id, updateUserDto);
-    return await this.findOne(id);
+    try {
+      return this.prisma.user.update({
+        where: { id },
+        data: updateUserDto,
+      });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          throw new NotFoundException('Пользователь не найден');
+        }
+      }
+      throw error;
+    }
   }
 
-  async remove(id: string): Promise<void> {
-    await this.userRepository.softDelete({ id });
+  async remove(id: string) {
+    try {
+      await this.prisma.user.delete({
+        where: { id },
+      });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          throw new NotFoundException('Пользователь не найден');
+        }
+      }
+      throw error;
+    }
   }
 
   async validatePassword(
     plainPassword: string,
     hashedPassword: string,
   ): Promise<boolean> {
-    return await bcrypt.compare(plainPassword, hashedPassword);
+    return bcrypt.compare(plainPassword, hashedPassword);
   }
 
-  async validateUser(username: string, password: string): Promise<User | null> {
+  async validateUser(username: string, password: string) {
     const user = await this.findByUsername(username);
     if (user && (await this.validatePassword(password, user.password))) {
       return user;
@@ -96,18 +121,19 @@ export class UsersService {
     return null;
   }
 
-  async findByRefreshToken(refreshToken: string): Promise<User | null> {
-    return await this.userRepository.findOne({
+  async findByRefreshToken(refreshToken: string) {
+    return this.prisma.user.findFirst({
       where: { refreshToken },
-      select: [
-        'id',
-        'username',
-        'firstName',
-        'lastName',
-        'createdAt',
-        'updatedAt',
-        'refreshToken',
-      ],
+      select: {
+        id: true,
+        username: true,
+        firstName: true,
+        lastName: true,
+        role: true,
+        createdAt: true,
+        updatedAt: true,
+        refreshToken: true,
+      },
     });
   }
 
@@ -115,8 +141,9 @@ export class UsersService {
     userId: string,
     refreshToken: string | null,
   ): Promise<void> {
-    await this.userRepository.update(userId, {
-      refreshToken: refreshToken || undefined,
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { refreshToken: refreshToken || null },
     });
   }
 }
