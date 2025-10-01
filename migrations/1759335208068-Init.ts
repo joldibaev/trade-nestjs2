@@ -1,10 +1,11 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class Init1759316206025 implements MigrationInterface {
-    name = 'Init1759316206025'
+export class Init1759335208068 implements MigrationInterface {
+    name = 'Init1759335208068'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`CREATE TABLE "vendors" ("id" uuid NOT NULL, "name" character varying(255) NOT NULL, "phone" character varying(20), "address" text, "notes" text, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, CONSTRAINT "PK_9c956c9797edfae5c6ddacc4e6e" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "users" ("id" uuid NOT NULL, "username" character varying NOT NULL, "password" character varying NOT NULL, "firstName" character varying, "lastName" character varying, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "refreshToken" character varying, CONSTRAINT "UQ_fe0bb3f6520ee0469504521e710" UNIQUE ("username"), CONSTRAINT "PK_a3ffb1c0c8416b9fc6f907b7433" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE INDEX "IDX_fe0bb3f6520ee0469504521e71" ON "users" ("username") `);
         await queryRunner.query(`CREATE TABLE "stores" ("id" uuid NOT NULL, "name" character varying(255) NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, CONSTRAINT "PK_7aa6e7d71fa7acdd7ca43d7c9cb" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "categories" ("id" uuid NOT NULL, "name" character varying(255) NOT NULL, "parentId" uuid, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, CONSTRAINT "PK_24dbc6126a28ff948da33e97d3b" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE INDEX "IDX_9a6f051e66982b5f0318981bca" ON "categories" ("parentId") `);
@@ -22,19 +23,16 @@ export class Init1759316206025 implements MigrationInterface {
         await queryRunner.query(`CREATE INDEX "IDX_ff56834e735fa78a15d0cf2192" ON "products" ("categoryId") `);
         await queryRunner.query(`CREATE INDEX "IDX_e3c0b01c8df8b391e132379445" ON "products" ("article") `);
         await queryRunner.query(`CREATE INDEX "IDX_4c9fb58de893725258746385e1" ON "products" ("name") `);
-        await queryRunner.query(`CREATE TABLE "users" ("id" uuid NOT NULL, "username" character varying NOT NULL, "password" character varying NOT NULL, "firstName" character varying, "lastName" character varying, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "refreshToken" character varying, CONSTRAINT "UQ_fe0bb3f6520ee0469504521e710" UNIQUE ("username"), CONSTRAINT "PK_a3ffb1c0c8416b9fc6f907b7433" PRIMARY KEY ("id"))`);
-        await queryRunner.query(`CREATE INDEX "IDX_fe0bb3f6520ee0469504521e71" ON "users" ("username") `);
-        await queryRunner.query(`CREATE TABLE "document_purchases" ("id" SERIAL NOT NULL, "performed" boolean NOT NULL DEFAULT false, "date" TIMESTAMP NOT NULL DEFAULT now(), "storeId" uuid NOT NULL, "authorId" uuid NOT NULL, "note" text, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, "vendorId" uuid NOT NULL, "priceTypeId" uuid NOT NULL, CONSTRAINT "PK_da3380025ccdccb4d16cb6e1dae" PRIMARY KEY ("id"))`);
-        await queryRunner.query(`CREATE INDEX "IDX_a0ca912ef95bd4b03299e5f67a" ON "document_purchases" ("date") `);
+        await queryRunner.query(`CREATE TABLE "vendors" ("id" uuid NOT NULL, "name" character varying(255) NOT NULL, "phone" character varying(20), "address" text, "notes" text, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, CONSTRAINT "PK_9c956c9797edfae5c6ddacc4e6e" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "customers" ("id" uuid NOT NULL, "name" character varying(255) NOT NULL, "phone" character varying(20), "address" text, "notes" text, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, CONSTRAINT "PK_133ec679a801fab5e070f73d3ea" PRIMARY KEY ("id"))`);
-        await queryRunner.query(`CREATE TABLE "document_sells" ("id" SERIAL NOT NULL, "performed" boolean NOT NULL DEFAULT false, "date" TIMESTAMP NOT NULL DEFAULT now(), "storeId" uuid NOT NULL, "authorId" uuid NOT NULL, "note" text, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, "customerId" uuid, "priceTypeId" uuid NOT NULL, CONSTRAINT "PK_077029a7529269234d0a7551259" PRIMARY KEY ("id"))`);
-        await queryRunner.query(`CREATE INDEX "IDX_35c79a60d966dc47a138dff96d" ON "document_sells" ("date") `);
-        await queryRunner.query(`CREATE TABLE "document_adjustments" ("id" SERIAL NOT NULL, "performed" boolean NOT NULL DEFAULT false, "date" TIMESTAMP NOT NULL DEFAULT now(), "storeId" uuid NOT NULL, "authorId" uuid NOT NULL, "note" text, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, CONSTRAINT "PK_7d9fa8b0e33d6d6a2e6477ddc79" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "document_purchases" ("id" uuid NOT NULL, "performed" boolean NOT NULL DEFAULT false, "date" TIMESTAMP NOT NULL DEFAULT now(), "storeId" uuid NOT NULL, "authorId" uuid NOT NULL, "note" text, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, "vendorId" uuid NOT NULL, "priceTypeId" uuid NOT NULL, CONSTRAINT "PK_da3380025ccdccb4d16cb6e1dae" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE INDEX "IDX_a0ca912ef95bd4b03299e5f67a" ON "document_purchases" ("date") `);
+        await queryRunner.query(`CREATE TABLE "document_adjustments" ("id" uuid NOT NULL, "performed" boolean NOT NULL DEFAULT false, "date" TIMESTAMP NOT NULL DEFAULT now(), "storeId" uuid NOT NULL, "authorId" uuid NOT NULL, "note" text, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, CONSTRAINT "PK_7d9fa8b0e33d6d6a2e6477ddc79" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE INDEX "IDX_019aa1400ed712becd19cf57a2" ON "document_adjustments" ("date") `);
         await queryRunner.query(`CREATE TABLE "operation_props" ("id" uuid NOT NULL, "operationId" uuid NOT NULL, "price" numeric(10,2) NOT NULL, "exchangeRate" numeric(10,2) NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, CONSTRAINT "UQ_d84fd2d474d3091ddf64b2088f8" UNIQUE ("operationId"), CONSTRAINT "REL_d84fd2d474d3091ddf64b2088f" UNIQUE ("operationId"), CONSTRAINT "PK_06e0784994e56f3e68fa733fed8" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE INDEX "IDX_f81d84ea9a81648bcc3d47f061" ON "operation_props" ("createdAt") `);
         await queryRunner.query(`CREATE INDEX "IDX_d84fd2d474d3091ddf64b2088f" ON "operation_props" ("operationId") `);
-        await queryRunner.query(`CREATE TABLE "operations" ("id" uuid NOT NULL, "quantity" integer NOT NULL, "quantityPositive" boolean NOT NULL, "productId" uuid NOT NULL, "storeId" uuid NOT NULL, "documentPurchaseId" integer, "documentSellId" integer, "documentAdjustmentId" integer, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, CONSTRAINT "PK_7b62d84d6f9912b975987165856" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "operations" ("id" uuid NOT NULL, "quantity" integer NOT NULL, "quantityPositive" boolean NOT NULL, "productId" uuid NOT NULL, "storeId" uuid NOT NULL, "documentPurchaseId" uuid, "documentSellId" uuid, "documentAdjustmentId" uuid, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, CONSTRAINT "PK_7b62d84d6f9912b975987165856" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE INDEX "IDX_a9a9fc0ae90a341a6a77b95374" ON "operations" ("documentAdjustmentId") `);
         await queryRunner.query(`CREATE INDEX "IDX_a40e72f3a8cd651e439005df61" ON "operations" ("documentSellId") `);
         await queryRunner.query(`CREATE INDEX "IDX_5d0d8227a1870669dd47a53ea3" ON "operations" ("documentPurchaseId") `);
@@ -42,6 +40,8 @@ export class Init1759316206025 implements MigrationInterface {
         await queryRunner.query(`CREATE INDEX "IDX_fb1d0da239ec55acfdb67e4a95" ON "operations" ("createdAt") `);
         await queryRunner.query(`CREATE INDEX "IDX_eae41ef556aaee77a853798002" ON "operations" ("storeId") `);
         await queryRunner.query(`CREATE INDEX "IDX_b97c3d5807234c9c972bfd20c8" ON "operations" ("productId") `);
+        await queryRunner.query(`CREATE TABLE "document_sells" ("id" uuid NOT NULL, "performed" boolean NOT NULL DEFAULT false, "date" TIMESTAMP NOT NULL DEFAULT now(), "storeId" uuid NOT NULL, "authorId" uuid NOT NULL, "note" text, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, "customerId" uuid, "priceTypeId" uuid NOT NULL, CONSTRAINT "PK_077029a7529269234d0a7551259" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE INDEX "IDX_35c79a60d966dc47a138dff96d" ON "document_sells" ("date") `);
         await queryRunner.query(`CREATE TABLE "currencies" ("id" uuid NOT NULL, "value" numeric(10,2) NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, CONSTRAINT "PK_d528c54860c4182db13548e08c4" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE TABLE "cashboxes" ("id" uuid NOT NULL, "name" character varying(255) NOT NULL, "storeId" uuid NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, CONSTRAINT "PK_a7a5168173c43cb11448fc30d42" PRIMARY KEY ("id"))`);
         await queryRunner.query(`ALTER TABLE "categories" ADD CONSTRAINT "FK_9a6f051e66982b5f0318981bcaa" FOREIGN KEY ("parentId") REFERENCES "categories"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
@@ -55,10 +55,6 @@ export class Init1759316206025 implements MigrationInterface {
         await queryRunner.query(`ALTER TABLE "document_purchases" ADD CONSTRAINT "FK_fe1062eae89d6b974902ac0529e" FOREIGN KEY ("authorId") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "document_purchases" ADD CONSTRAINT "FK_4044e7bfef044580b9482b0b5ea" FOREIGN KEY ("vendorId") REFERENCES "vendors"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "document_purchases" ADD CONSTRAINT "FK_f84bad4ea63fb4230f9b19281d3" FOREIGN KEY ("priceTypeId") REFERENCES "price_types"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "document_sells" ADD CONSTRAINT "FK_5eda19536daefdaea891c4e85db" FOREIGN KEY ("storeId") REFERENCES "stores"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "document_sells" ADD CONSTRAINT "FK_44c44d31ca0b021c8047b0296bd" FOREIGN KEY ("authorId") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "document_sells" ADD CONSTRAINT "FK_4c129d932e16ff9de35925f6ec0" FOREIGN KEY ("customerId") REFERENCES "customers"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
-        await queryRunner.query(`ALTER TABLE "document_sells" ADD CONSTRAINT "FK_26a4d115e0ab438f40878d269ab" FOREIGN KEY ("priceTypeId") REFERENCES "price_types"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "document_adjustments" ADD CONSTRAINT "FK_c3c9cdcfb0276be375da921240b" FOREIGN KEY ("storeId") REFERENCES "stores"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "document_adjustments" ADD CONSTRAINT "FK_e34f4453b57625a0687333458db" FOREIGN KEY ("authorId") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "operation_props" ADD CONSTRAINT "FK_d84fd2d474d3091ddf64b2088f8" FOREIGN KEY ("operationId") REFERENCES "operations"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
@@ -67,11 +63,19 @@ export class Init1759316206025 implements MigrationInterface {
         await queryRunner.query(`ALTER TABLE "operations" ADD CONSTRAINT "FK_5d0d8227a1870669dd47a53ea30" FOREIGN KEY ("documentPurchaseId") REFERENCES "document_purchases"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "operations" ADD CONSTRAINT "FK_a40e72f3a8cd651e439005df617" FOREIGN KEY ("documentSellId") REFERENCES "document_sells"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "operations" ADD CONSTRAINT "FK_a9a9fc0ae90a341a6a77b95374f" FOREIGN KEY ("documentAdjustmentId") REFERENCES "document_adjustments"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "document_sells" ADD CONSTRAINT "FK_5eda19536daefdaea891c4e85db" FOREIGN KEY ("storeId") REFERENCES "stores"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "document_sells" ADD CONSTRAINT "FK_44c44d31ca0b021c8047b0296bd" FOREIGN KEY ("authorId") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "document_sells" ADD CONSTRAINT "FK_4c129d932e16ff9de35925f6ec0" FOREIGN KEY ("customerId") REFERENCES "customers"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "document_sells" ADD CONSTRAINT "FK_26a4d115e0ab438f40878d269ab" FOREIGN KEY ("priceTypeId") REFERENCES "price_types"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
         await queryRunner.query(`ALTER TABLE "cashboxes" ADD CONSTRAINT "FK_8417e75a43684e1d621ecec984e" FOREIGN KEY ("storeId") REFERENCES "stores"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`ALTER TABLE "cashboxes" DROP CONSTRAINT "FK_8417e75a43684e1d621ecec984e"`);
+        await queryRunner.query(`ALTER TABLE "document_sells" DROP CONSTRAINT "FK_26a4d115e0ab438f40878d269ab"`);
+        await queryRunner.query(`ALTER TABLE "document_sells" DROP CONSTRAINT "FK_4c129d932e16ff9de35925f6ec0"`);
+        await queryRunner.query(`ALTER TABLE "document_sells" DROP CONSTRAINT "FK_44c44d31ca0b021c8047b0296bd"`);
+        await queryRunner.query(`ALTER TABLE "document_sells" DROP CONSTRAINT "FK_5eda19536daefdaea891c4e85db"`);
         await queryRunner.query(`ALTER TABLE "operations" DROP CONSTRAINT "FK_a9a9fc0ae90a341a6a77b95374f"`);
         await queryRunner.query(`ALTER TABLE "operations" DROP CONSTRAINT "FK_a40e72f3a8cd651e439005df617"`);
         await queryRunner.query(`ALTER TABLE "operations" DROP CONSTRAINT "FK_5d0d8227a1870669dd47a53ea30"`);
@@ -80,10 +84,6 @@ export class Init1759316206025 implements MigrationInterface {
         await queryRunner.query(`ALTER TABLE "operation_props" DROP CONSTRAINT "FK_d84fd2d474d3091ddf64b2088f8"`);
         await queryRunner.query(`ALTER TABLE "document_adjustments" DROP CONSTRAINT "FK_e34f4453b57625a0687333458db"`);
         await queryRunner.query(`ALTER TABLE "document_adjustments" DROP CONSTRAINT "FK_c3c9cdcfb0276be375da921240b"`);
-        await queryRunner.query(`ALTER TABLE "document_sells" DROP CONSTRAINT "FK_26a4d115e0ab438f40878d269ab"`);
-        await queryRunner.query(`ALTER TABLE "document_sells" DROP CONSTRAINT "FK_4c129d932e16ff9de35925f6ec0"`);
-        await queryRunner.query(`ALTER TABLE "document_sells" DROP CONSTRAINT "FK_44c44d31ca0b021c8047b0296bd"`);
-        await queryRunner.query(`ALTER TABLE "document_sells" DROP CONSTRAINT "FK_5eda19536daefdaea891c4e85db"`);
         await queryRunner.query(`ALTER TABLE "document_purchases" DROP CONSTRAINT "FK_f84bad4ea63fb4230f9b19281d3"`);
         await queryRunner.query(`ALTER TABLE "document_purchases" DROP CONSTRAINT "FK_4044e7bfef044580b9482b0b5ea"`);
         await queryRunner.query(`ALTER TABLE "document_purchases" DROP CONSTRAINT "FK_fe1062eae89d6b974902ac0529e"`);
@@ -97,6 +97,8 @@ export class Init1759316206025 implements MigrationInterface {
         await queryRunner.query(`ALTER TABLE "categories" DROP CONSTRAINT "FK_9a6f051e66982b5f0318981bcaa"`);
         await queryRunner.query(`DROP TABLE "cashboxes"`);
         await queryRunner.query(`DROP TABLE "currencies"`);
+        await queryRunner.query(`DROP INDEX "public"."IDX_35c79a60d966dc47a138dff96d"`);
+        await queryRunner.query(`DROP TABLE "document_sells"`);
         await queryRunner.query(`DROP INDEX "public"."IDX_b97c3d5807234c9c972bfd20c8"`);
         await queryRunner.query(`DROP INDEX "public"."IDX_eae41ef556aaee77a853798002"`);
         await queryRunner.query(`DROP INDEX "public"."IDX_fb1d0da239ec55acfdb67e4a95"`);
@@ -110,13 +112,10 @@ export class Init1759316206025 implements MigrationInterface {
         await queryRunner.query(`DROP TABLE "operation_props"`);
         await queryRunner.query(`DROP INDEX "public"."IDX_019aa1400ed712becd19cf57a2"`);
         await queryRunner.query(`DROP TABLE "document_adjustments"`);
-        await queryRunner.query(`DROP INDEX "public"."IDX_35c79a60d966dc47a138dff96d"`);
-        await queryRunner.query(`DROP TABLE "document_sells"`);
-        await queryRunner.query(`DROP TABLE "customers"`);
         await queryRunner.query(`DROP INDEX "public"."IDX_a0ca912ef95bd4b03299e5f67a"`);
         await queryRunner.query(`DROP TABLE "document_purchases"`);
-        await queryRunner.query(`DROP INDEX "public"."IDX_fe0bb3f6520ee0469504521e71"`);
-        await queryRunner.query(`DROP TABLE "users"`);
+        await queryRunner.query(`DROP TABLE "customers"`);
+        await queryRunner.query(`DROP TABLE "vendors"`);
         await queryRunner.query(`DROP INDEX "public"."IDX_4c9fb58de893725258746385e1"`);
         await queryRunner.query(`DROP INDEX "public"."IDX_e3c0b01c8df8b391e132379445"`);
         await queryRunner.query(`DROP INDEX "public"."IDX_ff56834e735fa78a15d0cf2192"`);
@@ -134,7 +133,8 @@ export class Init1759316206025 implements MigrationInterface {
         await queryRunner.query(`DROP INDEX "public"."IDX_9a6f051e66982b5f0318981bca"`);
         await queryRunner.query(`DROP TABLE "categories"`);
         await queryRunner.query(`DROP TABLE "stores"`);
-        await queryRunner.query(`DROP TABLE "vendors"`);
+        await queryRunner.query(`DROP INDEX "public"."IDX_fe0bb3f6520ee0469504521e71"`);
+        await queryRunner.query(`DROP TABLE "users"`);
     }
 
 }

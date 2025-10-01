@@ -5,7 +5,7 @@ import {
   Body,
   Patch,
   Param,
-  ParseIntPipe,
+  ParseUUIDPipe,
   UseGuards,
   Request,
 } from '@nestjs/common';
@@ -55,7 +55,7 @@ export class DocumentPurchasesController {
   @Get(':id')
   @ApiOperation({ summary: 'Получить документ покупки по ID' })
   @ApiParam({ name: 'id', description: 'ID документа покупки' })
-  findOne(@Param('id', ParseIntPipe) id: number): Promise<DocumentPurchase> {
+  findOne(@Param('id', ParseUUIDPipe) id: string): Promise<DocumentPurchase> {
     return this.documentPurchasesService.findOne(id);
   }
 
@@ -63,7 +63,7 @@ export class DocumentPurchasesController {
   @ApiOperation({ summary: 'Обновить документ покупки' })
   @ApiParam({ name: 'id', description: 'ID документа покупки' })
   update(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() updateDocumentPurchaseDto: UpdateDocumentPurchaseDto,
     @Request() req: { user: User },
   ): Promise<DocumentPurchase> {

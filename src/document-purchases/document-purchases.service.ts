@@ -39,7 +39,7 @@ export class DocumentPurchasesService {
     });
   }
 
-  async findOne(id: number): Promise<DocumentPurchase> {
+  async findOne(id: string): Promise<DocumentPurchase> {
     const documentPurchase = await this.documentPurchaseRepository.findOne({
       where: { id },
       relations: ['store', 'vendor', 'author', 'priceType'],
@@ -51,7 +51,7 @@ export class DocumentPurchasesService {
   }
 
   async update(
-    id: number,
+    id: string,
     updateDocumentPurchaseDto: UpdateDocumentPurchaseDto & {
       authorId: string;
     },
@@ -77,12 +77,12 @@ export class DocumentPurchasesService {
     return await this.findOne(id);
   }
 
-  async deleteMany(ids: number[]): Promise<SuccessResponse> {
+  async deleteMany(ids: string[]): Promise<SuccessResponse> {
     await this.documentPurchaseRepository.softDelete({ id: In(ids) });
     return { success: true };
   }
 
-  async recoveryMany(ids: number[]): Promise<SuccessResponse> {
+  async recoveryMany(ids: string[]): Promise<SuccessResponse> {
     await this.documentPurchaseRepository.restore({ id: In(ids) });
     return { success: true };
   }

@@ -510,7 +510,9 @@ async function seedDatabase() {
 
     if (defaultStoreId && defaultUserId) {
       // Создаем один документ корректировки остатков для всех операций
+      const documentAdjustmentId = uuidv7();
       documentAdjustments.push({
+        id: documentAdjustmentId, // Используем UUID v7
         performed: true, // Документ выполнен
         date: new Date(),
         storeId: defaultStoreId,
@@ -524,12 +526,6 @@ async function seedDatabase() {
       console.log(
         `✅ Document adjustments seeded (${documentAdjustments.length} documents)`,
       );
-
-      // Получаем ID созданного документа корректировки
-      const documentAdjustmentQuery = await dataSource.query(
-        'SELECT id FROM document_adjustments ORDER BY id DESC LIMIT 1',
-      );
-      const documentAdjustmentId = documentAdjustmentQuery[0]?.id;
 
       console.log('🔄 Seeding operations from XLSX products...');
       // Генерируем операции из данных продуктов в XLSX и привязываем к документу корректировки

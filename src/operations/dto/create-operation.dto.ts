@@ -100,33 +100,30 @@ export class CreateOperationDto {
 
   @ApiProperty({
     description: 'Document Purchase ID for this operation',
-    example: 1,
+    example: '018f-1234-5678-9abc-def012345678',
     required: false,
   })
   @IsOptional()
-  @IsInt({ message: 'documentPurchaseId должен быть целым числом' })
-  @Min(1, { message: 'documentPurchaseId должен быть больше 0' })
-  documentPurchaseId?: number;
+  @IsUUID('7', { message: 'documentPurchaseId должен быть валидным UUID v7' })
+  documentPurchaseId?: string;
 
   @ApiProperty({
     description: 'Document Sell ID for this operation',
-    example: 1,
+    example: '018f-1234-5678-9abc-def012345678',
     required: false,
   })
   @IsOptional()
-  @IsInt({ message: 'documentSellId должен быть целым числом' })
-  @Min(1, { message: 'documentSellId должен быть больше 0' })
-  documentSellId?: number;
+  @IsUUID('7', { message: 'documentSellId должен быть валидным UUID v7' })
+  documentSellId?: string;
 
   @ApiProperty({
     description: 'Document Adjustment ID for this operation',
-    example: 1,
+    example: '018f-1234-5678-9abc-def012345678',
     required: false,
   })
   @IsOptional()
-  @IsInt({ message: 'documentAdjustmentId должен быть целым числом' })
-  @Min(1, { message: 'documentAdjustmentId должен быть больше 0' })
-  documentAdjustmentId?: number;
+  @IsUUID('7', { message: 'documentAdjustmentId должен быть валидным UUID v7' })
+  documentAdjustmentId?: string;
 
   @ApiProperty({
     description: 'Свойства операции (цена и курс валют)',
@@ -154,33 +151,30 @@ export class CreateOperationDto {
 export class CreatePurchaseOperationDto extends CreateOperationDto {
   @ApiProperty({
     description: 'Document Purchase ID for this operation',
-    example: 1,
+    example: '018f-1234-5678-9abc-def012345678',
     required: false,
   })
-  @IsInt({ message: 'documentPurchaseId должен быть целым числом' })
-  @Min(1, { message: 'documentPurchaseId должен быть больше 0' })
-  documentPurchaseId?: number;
+  @IsUUID('7', { message: 'documentPurchaseId должен быть валидным UUID v7' })
+  documentPurchaseId?: string;
 }
 
 export class CreateSellOperationDto extends CreateOperationDto {
   @ApiProperty({
     description: 'Document Sell ID for this operation',
-    example: 1,
+    example: '018f-1234-5678-9abc-def012345678',
     required: false,
   })
-  @IsInt({ message: 'documentSellId должен быть целым числом' })
-  @Min(1, { message: 'documentSellId должен быть больше 0' })
-  documentSellId: number;
+  @IsUUID('7', { message: 'documentSellId должен быть валидным UUID v7' })
+  documentSellId: string;
 }
 
 export class CreateAdjustmentOperationDto extends CreateOperationDto {
   @ApiProperty({
     description: 'Document Adjustment ID for this operation',
-    example: 1,
+    example: '018f-1234-5678-9abc-def012345678',
     required: false,
   })
-  @IsInt({ message: 'documentAdjustmentId должен быть целым числом' })
-  @Min(1, { message: 'documentAdjustmentId должен быть больше 0' })
-  documentAdjustmentId: number;
+  @IsUUID('7', { message: 'documentAdjustmentId должен быть валидным UUID v7' })
+  documentAdjustmentId: string;
 }
 */

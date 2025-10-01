@@ -85,11 +85,11 @@ export class Operation extends BaseUuidEntity {
 
   @ApiProperty({
     description: 'ID документа покупки',
-    example: 1,
+    example: '018f-1234-5678-9abc-def012345678',
     required: false,
   })
-  @Column({ type: 'int', nullable: true })
-  documentPurchaseId?: number;
+  @Column({ type: 'uuid', nullable: true })
+  documentPurchaseId?: string;
 
   @ApiProperty({
     description: 'Документ покупки, связанный с этой операцией',
@@ -102,11 +102,11 @@ export class Operation extends BaseUuidEntity {
 
   @ApiProperty({
     description: 'ID документа продажи',
-    example: 1,
+    example: '018f-1234-5678-9abc-def012345678',
     required: false,
   })
-  @Column({ type: 'int', nullable: true })
-  documentSellId?: number;
+  @Column({ type: 'uuid', nullable: true })
+  documentSellId?: string;
 
   @ApiProperty({
     description: 'Документ продажи, связанный с этой операцией',
@@ -119,11 +119,11 @@ export class Operation extends BaseUuidEntity {
 
   @ApiProperty({
     description: 'ID документа корректировки остатков',
-    example: 1,
+    example: '018f-1234-5678-9abc-def012345678',
     required: false,
   })
-  @Column({ type: 'int', nullable: true })
-  documentAdjustmentId?: number;
+  @Column({ type: 'uuid', nullable: true })
+  documentAdjustmentId?: string;
 
   @ApiProperty({
     description: 'Документ корректировки остатков, связанный с этой операцией',

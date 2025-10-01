@@ -5,21 +5,14 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
-  PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Store } from '../../stores/entities/store.entity';
 import { User } from '../../users/entities/user.entity';
+import { BaseUuidEntity } from './base-uuid.entity';
 
-export abstract class BaseDocument {
-  @ApiProperty({
-    description: 'Уникальный идентификатор документа',
-    example: 1,
-  })
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export abstract class BaseDocument extends BaseUuidEntity {
   @ApiProperty({
     description: 'Выполнен ли документ',
     example: true,

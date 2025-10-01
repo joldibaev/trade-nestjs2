@@ -1,35 +1,31 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsNumber } from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsOptional, IsUUID } from 'class-validator';
 
 export class GetOperationsDto {
   @ApiProperty({
     description: 'ID документа продажи для фильтрации операций',
-    example: 1,
+    example: '018f-1234-5678-9abc-def012345678',
     required: false,
   })
   @IsOptional()
-  @Type(() => Number)
-  @IsNumber({}, { message: 'documentSellId должен быть числом' })
-  documentSellId?: number;
+  @IsUUID('7', { message: 'documentSellId должен быть валидным UUID v7' })
+  documentSellId?: string;
 
   @ApiProperty({
     description: 'ID документа покупки для фильтрации операций',
-    example: 1,
+    example: '018f-1234-5678-9abc-def012345678',
     required: false,
   })
   @IsOptional()
-  @Type(() => Number)
-  @IsNumber({}, { message: 'documentPurchaseId должен быть числом' })
-  documentPurchaseId?: number;
+  @IsUUID('7', { message: 'documentPurchaseId должен быть валидным UUID v7' })
+  documentPurchaseId?: string;
 
   @ApiProperty({
     description: 'ID документа корректировки для фильтрации операций',
-    example: 1,
+    example: '018f-1234-5678-9abc-def012345678',
     required: false,
   })
   @IsOptional()
-  @Type(() => Number)
-  @IsNumber({}, { message: 'documentAdjustmentId должен быть числом' })
-  documentAdjustmentId?: number;
+  @IsUUID('7', { message: 'documentAdjustmentId должен быть валидным UUID v7' })
+  documentAdjustmentId?: string;
 }
